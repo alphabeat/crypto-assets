@@ -7,11 +7,11 @@ import { fetchTickerPrice } from "../lib/tickers"
 
 const KRAKEN_TICKERS = [{
   platform: 'kraken',
-  token: 'XBT',
+  token: 'BTC',
   market: 'EUR',
 }, {
   platform: 'kraken',
-  token: 'XBT',
+  token: 'BTC',
   market: 'USD',
 }, {
   platform: 'kraken',
@@ -45,7 +45,7 @@ function Home(props) {
           <div className="hero-body">
             <div className="container">
               <h1 className="title">
-                Assets app
+                Crypto Assets
               </h1>
               <h2 className="subtitle">
                 Welcome to your assets page!
@@ -80,7 +80,7 @@ export async function getServerSideProps() {
     value: await fetchTickerPrice(ticker),
   })))
 
-  const currentBTCPrice = tickers.find(({ token, market }) => token === 'XBT' && market === 'EUR')
+  const currentBTCPrice = tickers.find(({ token, market }) => token === 'BTC' && market === 'EUR')
   const assetsPromises = assets.map(async (asset) => {
     const { platform, token, market = 'BTC', balance } = asset
 

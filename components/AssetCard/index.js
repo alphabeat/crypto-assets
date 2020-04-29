@@ -1,6 +1,7 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEuroSign } from '@fortawesome/free-solid-svg-icons'
 import { faBtc } from '@fortawesome/free-brands-svg-icons'
+
+import IconText from '../IconText'
 
 const PLATFORM_COLOR = {
   bittrex: 'primary',
@@ -32,24 +33,31 @@ function AssetCard(props) {
             <span className={`tag is-${platformColor}`}>{ platform }</span>
           </p>
         </header>
-        <div className="card-content">
+        <div className="card-content has-text-centered">
           <p className="title is-6">
             { balance }
           </p>
-          <p className="content has-text-grey">
-              <span className="icon">
-                <FontAwesomeIcon icon={ faBtc } />
-              </span>
-              { currentBTCValue.toFixed(8) }
-            </p>
         </div>
         <footer className="card-footer">
           <div className="card-footer-item">
+            <p className="content has-text-grey has-text-centered">
+              Initial value:
+              <br />
+              <IconText icon={ faBtc } text={ initialValue.toFixed(8) } />
+            </p>
+          </div>
+          <div className="card-footer-item">
+            <p className="content has-text-grey has-text-centered">
+              Current value:
+              <br />
+              <IconText icon={ faBtc } text={ currentBTCValue.toFixed(8) } />
+            </p>
+          </div>
+        </footer>
+        <footer className="card-footer">
+          <div className="card-footer-item">
             <p className="title is-6 has-text-success">
-              { currentEURValue.toFixed(2) }
-              <span className="icon">
-                <FontAwesomeIcon icon={ faEuroSign } />
-              </span>
+              <IconText icon={ faEuroSign } text={ currentEURValue.toFixed(2) } />
             </p>
           </div>
         </footer>
