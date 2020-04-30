@@ -15,7 +15,7 @@ function AssetCard(props) {
     balance,
     initialValue,
     platform,
-    token,
+    coin,
     currentBTCValue,
     currentEURValue,
   } = props
@@ -27,7 +27,7 @@ function AssetCard(props) {
       <div>
         <header className="card-header">
           <p className="card-header-title">
-            { token }
+            { coin }
           </p>
           <p className="card-header-icon">
             <span className={`tag is-${platformColor}`}>{ platform }</span>

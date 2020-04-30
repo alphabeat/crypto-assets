@@ -1,5 +1,5 @@
 function Ticker(props) {
-  const { token, market, value } = props
+  const { coin, market, value } = props
 
   return (
     <div className="tile is-parent">
@@ -8,7 +8,7 @@ function Ticker(props) {
           { value }
         </p>
         <p className="subtitle">
-          { token } / { market }
+          { coin } / { market }
         </p>
       </article>
     </div>

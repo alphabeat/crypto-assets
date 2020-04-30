@@ -1,3 +1,5 @@
+import fetch from 'node-fetch'
+
 import AssetCard from '../components/AssetCard'
 import Layout from '../components/Layout'
 import Ticker from '../components/Ticker'
@@ -7,19 +9,19 @@ import { fetchTickerPrice } from "../lib/tickers"
 
 const KRAKEN_TICKERS = [{
   platform: 'kraken',
-  token: 'BTC',
+  coin: 'BTC',
   market: 'EUR',
 }, {
   platform: 'kraken',
-  token: 'BTC',
+  coin: 'BTC',
   market: 'USD',
 }, {
   platform: 'kraken',
-  token: 'ETH',
+  coin: 'ETH',
   market: 'EUR',
 }, {
   platform: 'kraken',
-  token: 'ETH',
+  coin: 'ETH',
   market: 'USD',
 }]
 
@@ -27,13 +29,13 @@ function Home(props) {
   const { assets, tickers } = props
 
   const mappedTickers = tickers.map(ticker =>
-    <Ticker key={`${ticker.token}-${ticker.market}`} {...ticker} />
+    <Ticker key={`${ticker.coin}-${ticker.market}`} {...ticker} />
   )
 
   const mappedAssets = assets
-    .sort((a, b) => a.token.localeCompare(b.token))
+    .sort((a, b) => a.coin.localeCompare(b.coin))
     .map(asset =>
-      <div key={ asset.token } className="column is-one-third">
+      <div key={ asset.coin } className="column is-one-third">
         <AssetCard {...asset} />
       </div>
     )
@@ -73,19 +75,22 @@ function Home(props) {
 }
 
 export async function getServerSideProps() {
-  const { assets } = assetsData;
+  const fetchAssetsResponse = await fetch('http://localhost:3000/api')
+  const result = await fetchAssetsResponse.json()
+
+  const assets = result.map(({ data }) => data)
 
   const tickers = await Promise.all(KRAKEN_TICKERS.map(async (ticker) => ({
     ...ticker,
     value: await fetchTickerPrice(ticker),
   })))
 
-  const currentBTCPrice = tickers.find(({ token, market }) => token === 'BTC' && market === 'EUR')
+  const currentBTCPrice = tickers.find(({ coin, market }) => coin === 'BTC' && market === 'EUR')
   const assetsPromises = assets.map(async (asset) => {
-    const { platform, token, market = 'BTC', balance } = asset
+    const { platform, coin, market = 'BTC', balance } = asset
 
-    const currentPrice = token !== 'BTC'
-      ? await fetchTickerPrice({ platform, token, market })
+    const currentPrice = coin !== 'BTC'
+      ? await fetchTickerPrice({ platform, coin, market })
       : 1
 
     const currentBTCValue = balance * currentPrice 
