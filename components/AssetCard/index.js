@@ -34,31 +34,31 @@ function AssetCard(props) {
           </p>
         </header>
         <div className="card-content has-text-centered">
-          <p className="title is-6">
+          <p className="title is-5">
             { balance }
           </p>
         </div>
         <footer className="card-footer">
           <div className="card-footer-item">
-            <p className="content has-text-grey has-text-centered">
-              Initial value:
+            <div className="content has-text-grey has-text-centered">
+              <span>Initial value:</span>
               <br />
               <IconText icon={ faBtc } text={ initialValue.toFixed(8) } />
-            </p>
+            </div>
           </div>
           <div className="card-footer-item">
-            <p className="content has-text-grey has-text-centered">
-              Current value:
+            <div className="content has-text-grey has-text-centered">
+              <span>Current value:</span>
               <br />
               <IconText icon={ faBtc } text={ currentBTCValue.toFixed(8) } />
-            </p>
+            </div>
           </div>
         </footer>
         <footer className="card-footer">
           <div className="card-footer-item">
-            <p className="title is-6 has-text-success">
+            <div className="title is-6 has-text-success">
               <IconText icon={ faEuroSign } text={ currentEURValue.toFixed(2) } />
-            </p>
+            </div>
           </div>
         </footer>
       </div>
