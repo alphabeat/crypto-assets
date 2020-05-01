@@ -1,9 +1,12 @@
+import { useState } from 'react'
 import fetch from 'node-fetch'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
 
 import AssetCard from '../components/AssetCard'
+import AssetForm from '../components/AssetForm'
 import Layout from '../components/Layout'
 import Ticker from '../components/Ticker'
-import assetsData from '../data/assets.json'
 
 import { fetchTickerPrice } from "../lib/tickers"
 
@@ -27,6 +30,7 @@ const KRAKEN_TICKERS = [{
 
 function Home(props) {
   const { assets, tickers } = props
+  const [displayModal, toggleModal] = useState(false)
 
   const mappedTickers = tickers.map(ticker =>
     <Ticker key={`${ticker.coin}-${ticker.market}`} {...ticker} />
@@ -40,17 +44,31 @@ function Home(props) {
       </div>
     )
 
+  function renderNewAssetButton() {
+    return (
+      <button
+        className="button is-fullwidth is-info is-outlined"
+        onClick={() => toggleModal(true)}
+      >
+        <span className="icon is-small">
+          <FontAwesomeIcon icon={ faPlus } />
+        </span>
+        <span>Add an asset</span>
+      </button>
+    )
+  }
+
   return (
     <Layout>
       <div className="Home">
-        <section className="hero is-success is-small has-text-centered">
+        <section className="hero is-link is-small has-text-centered">
           <div className="hero-body">
             <div className="container">
               <h1 className="title">
                 Crypto Assets
               </h1>
               <h2 className="subtitle">
-                Welcome to your assets page!
+                Follow-up of your assets
               </h2>
             </div>
           </div>
@@ -66,10 +84,19 @@ function Home(props) {
               <div className="assets-container columns is-multiline">
                 { mappedAssets }
               </div>
+              <div className="columns is-centered">
+                <div className="column is-one-fifth">
+                  { renderNewAssetButton() }
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
+      <AssetForm
+        show={ displayModal }
+        handleClose={() => toggleModal(false)}
+      />
     </Layout>
   )
 }
@@ -87,10 +114,10 @@ export async function getServerSideProps() {
 
   const currentBTCPrice = tickers.find(({ coin, market }) => coin === 'BTC' && market === 'EUR')
   const assetsPromises = assets.map(async (asset) => {
-    const { platform, coin, market = 'BTC', balance } = asset
+    const { platform, coin, balance } = asset
 
     const currentPrice = coin !== 'BTC'
-      ? await fetchTickerPrice({ platform, coin, market })
+      ? await fetchTickerPrice({ platform, coin, market: 'BTC' })
       : 1
 
     const currentBTCValue = balance * currentPrice 

@@ -20,17 +20,20 @@ function AssetCard(props) {
     currentEURValue,
   } = props
 
+  const isCurrentValueUp = currentBTCValue >= initialValue
   const platformColor = PLATFORM_COLOR[platform.toLowerCase()]
+  const currentValueBackground = isCurrentValueUp ? '#effaf3' : '#fffbeb'
+  const currentValueTextColor = isCurrentValueUp ? '#257942' : '#947600'
 
   function renderCardContent() {
     return (
       <div>
-        <header className="card-header">
+        <header className="card-header has-background-light">
           <p className="card-header-title">
             { coin }
           </p>
           <p className="card-header-icon">
-            <span className={`tag is-${platformColor}`}>{ platform }</span>
+            <span className={`tag is-${platformColor} is-capitalized`}>{ platform }</span>
           </p>
         </header>
         <div className="card-content has-text-centered">
@@ -46,8 +49,8 @@ function AssetCard(props) {
               <IconText icon={ faBtc } text={ initialValue.toFixed(8) } />
             </div>
           </div>
-          <div className="card-footer-item">
-            <div className="content has-text-grey has-text-centered">
+          <div className="card-footer-item" style={{ backgroundColor: currentValueBackground }}>
+            <div className="content has-text-centered" style={{ color: currentValueTextColor }}>
               <span>Current value:</span>
               <br />
               <IconText icon={ faBtc } text={ currentBTCValue.toFixed(8) } />
@@ -56,7 +59,7 @@ function AssetCard(props) {
         </footer>
         <footer className="card-footer">
           <div className="card-footer-item">
-            <div className="title is-6 has-text-success">
+            <div className="title is-6 has-text-info">
               <IconText icon={ faEuroSign } text={ currentEURValue.toFixed(2) } />
             </div>
           </div>

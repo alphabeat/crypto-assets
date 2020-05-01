@@ -4,7 +4,7 @@ const secret = process.env.FAUNA_SECRET_KEY
 const { query } = faunadb
 const client = new faunadb.Client({ secret })
 
-module.exports = async (req, res) => {
+async function getAllAssets(res) {
   try {
     const assets = await client.query(
       query.Map(
@@ -22,4 +22,28 @@ module.exports = async (req, res) => {
   catch (e) {
     res.status(500).json({ error: e.message })
   }
+}
+
+async function createAsset(data, res) {
+  try {
+    await client.query(
+      query.Create(
+        query.Collection('assets'),
+        { data: JSON.parse(data) }
+      )
+    )
+
+    res.status(200).json({ success: true })
+  }
+  catch (e) {
+    res.status(500).json({ error: e.message })
+  }
+}
+
+module.exports = async (req, res) => {
+  if ( req.method === 'POST' ) {
+    return createAsset(req.body, res)
+  }
+
+  await getAllAssets(res)
 }

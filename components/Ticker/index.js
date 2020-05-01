@@ -5,7 +5,7 @@ function Ticker(props) {
     <div className="tile is-parent">
       <article className="tile is-child box">
         <p className="title">
-          { value }
+          { value.toFixed(2) }
         </p>
         <p className="subtitle">
           { coin } / { market }
