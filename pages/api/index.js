@@ -1,8 +1,4 @@
-const faunadb = require('faunadb')
-
-const secret = process.env.FAUNA_SECRET_KEY
-const { query } = faunadb
-const client = new faunadb.Client({ secret })
+const { client, query } = require('../../lib/faunadb')
 
 async function getAllAssets(res) {
   try {

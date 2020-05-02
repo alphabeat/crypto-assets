@@ -13,11 +13,12 @@ const PLATFORM_COLOR = {
 function AssetCard(props) {
   const {
     balance,
-    initialValue,
-    platform,
     coin,
     currentBTCValue,
     currentEURValue,
+    initialValue,
+    onClick,
+    platform,
   } = props
 
   const isCurrentValueUp = currentBTCValue >= initialValue
@@ -27,7 +28,7 @@ function AssetCard(props) {
 
   function renderCardContent() {
     return (
-      <div>
+      <div className="card">
         <header className="card-header has-background-light">
           <p className="card-header-title">
             { coin }
@@ -69,7 +70,7 @@ function AssetCard(props) {
   }
 
   return (
-    <div className="Asset card">
+    <div className="AssetCard" onClick={() => onClick()} style={{ cursor: 'pointer' }}>
       { renderCardContent() }
     </div>
   )

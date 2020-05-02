@@ -1,22 +1,24 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Router from 'next/router'
 
 function AssetForm(props) {
-  const { show, handleClose } = props
+  const { show, handleClose, asset } = props
 
-  const initialState = {
-    coin: '',
-    balance: '',
-    platform: '',
-    initialValue: '',
-  }
+  const INPUT_FIELDS = ['coin', 'balance', 'platform', 'initialValue']
+
+  const isUpdate = Boolean(asset)
+  const initialState = INPUT_FIELDS.reduce((acc, field) => ({
+    ...acc,
+    [field]: isUpdate && asset.data[field] || '',
+  }), {})
+
+  const { id: assetId } = isUpdate ? asset.ref['@ref'] : { id: null }
 
   const [fields, setFields] = useState(initialState)
 
-  const onClose = () => {
+  useEffect(() => {
     setFields(initialState)
-    handleClose()
-  }
+  }, [asset])
 
   const handleInputChange = (event) => {
     event.persist()
@@ -34,24 +36,63 @@ function AssetForm(props) {
     }))
   }
 
+  const handleCreate = async () => {
+    return fetch('http://localhost:3000/api', {
+      method: 'POST',
+      body: JSON.stringify(fields),
+    })
+  }
+
+  const handleUpdate = async () => {
+    const data = {
+      ...asset,
+      data: fields,
+    }
+
+    return fetch(`http://localhost:3000/api/${assetId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    })
+  }
+
+  const handleDelete = async () => {
+    return fetch(`http://localhost:3000/api/${assetId}`, {
+      method: 'DELETE',
+    })
+  }
+
   const handleSubmit = async (event) => {
     event.persist()
 
-    const response = await fetch('http://localhost:3000/api', {
-      method: 'POST',
-      body: JSON.stringify(fields)
-    })
+    const actions = {
+      create: handleCreate,
+      update: handleUpdate,
+      delete: handleDelete,
+    }
 
-    const result = await response.json()
+    try {
+      const response = await actions[event.target.innerHTML.toLowerCase()]()
+      const result = await response.json()
 
-    if ( result.success ) (
-      Router.reload()
-    )
+      if ( result.success ) {
+        Router.reload()
+      }
+      else {
+        throw new Error(result.error)
+      }
+    }
+    catch (e) {
+      console.error(e.message)
+    }
   }
 
   const activeClass = show ? 'is-active' : ''
   const isValidForm = () => {
     const fieldsValues = Object.values(fields)
+
+    if ( isUpdate ) {
+      return fieldsValues.some((value) => !Object.values(asset.data).includes(value))
+    }
 
     return fieldsValues.every(Boolean)
   }
@@ -62,12 +103,14 @@ function AssetForm(props) {
       <div className="modal-content">
         <div className="card">
           <header className="card-header">
-            <p className="card-header-title">New asset</p>
+            <p className="card-header-title">
+              {isUpdate ? 'Edit' : 'New'} asset
+            </p>
             <div className="card-header-icon">
               <button
                 className="delete"
                 aria-label="close"
-                onClick={ onClose }
+                onClick={ handleClose }
               ></button>
             </div>
           </header>
@@ -140,13 +183,24 @@ function AssetForm(props) {
           </section>
           <footer className="card-footer" style={{ justifyContent: 'flex-end' }}>
             <div className="card-footer-item">
-              <button className="button is-link is-light" onClick={ onClose }>Cancel</button>
+              <button className="button is-link is-light" onClick={ handleClose }>Cancel</button>
             </div>
             <div className="card-footer-item">
               <button className="button is-link" onClick={ handleSubmit } disabled={ !isValidForm() }>
-                Create
+                { isUpdate ? 'Update' : 'Create' }
               </button>
             </div>
+            {
+              isUpdate
+              ? (
+                <div className="card-footer-item">
+                  <button className="button is-danger" onClick={ handleSubmit }>
+                    Delete
+                  </button>
+                </div>
+              )
+              : null
+            }
           </footer>
         </div>
       </div>

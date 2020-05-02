@@ -31,20 +31,31 @@ const KRAKEN_TICKERS = [{
 function Home(props) {
   const { assets, tickers } = props
   const [displayModal, toggleModal] = useState(false)
+  const [selectedAsset, setSelected] = useState(null)
+
+  const handleModalClose = () => {
+    setSelected(null)
+    toggleModal(false)
+  }
+
+  const handleAssetClick = (asset) => {
+    setSelected(asset)
+    toggleModal(true)
+  }
 
   const mappedTickers = tickers.map(ticker =>
     <Ticker key={`${ticker.coin}-${ticker.market}`} {...ticker} />
   )
 
   const mappedAssets = assets
-    .sort((a, b) => a.coin.localeCompare(b.coin))
+    .sort((a, b) => a.data.coin.localeCompare(b.data.coin))
     .map(asset =>
-      <div key={ asset.coin } className="column is-one-third">
-        <AssetCard {...asset} />
+      <div key={ asset.ref['@ref'].id } className="column is-one-third">
+        <AssetCard {...asset.data} onClick={() => handleAssetClick(asset)} />
       </div>
     )
 
-  function renderNewAssetButton() {
+  const renderNewAssetButton = () => {
     return (
       <button
         className="button is-fullwidth is-info is-outlined"
@@ -95,7 +106,8 @@ function Home(props) {
       </div>
       <AssetForm
         show={ displayModal }
-        handleClose={() => toggleModal(false)}
+        handleClose={ handleModalClose }
+        asset={ selectedAsset }
       />
     </Layout>
   )
@@ -103,9 +115,7 @@ function Home(props) {
 
 export async function getServerSideProps() {
   const fetchAssetsResponse = await fetch('http://localhost:3000/api')
-  const result = await fetchAssetsResponse.json()
-
-  const assets = result.map(({ data }) => data)
+  const assets = await fetchAssetsResponse.json()
 
   const tickers = await Promise.all(KRAKEN_TICKERS.map(async (ticker) => ({
     ...ticker,
@@ -114,7 +124,7 @@ export async function getServerSideProps() {
 
   const currentBTCPrice = tickers.find(({ coin, market }) => coin === 'BTC' && market === 'EUR')
   const assetsPromises = assets.map(async (asset) => {
-    const { platform, coin, balance } = asset
+    const { platform, coin, balance } = asset.data
 
     const currentPrice = coin !== 'BTC'
       ? await fetchTickerPrice({ platform, coin, market: 'BTC' })
@@ -124,12 +134,15 @@ export async function getServerSideProps() {
 
     return {
       ...asset,
-      currentBTCValue,
-      currentEURValue: currentBTCValue * currentBTCPrice.value,
+      data: {
+        ...asset.data,
+        currentBTCValue,
+        currentEURValue: currentBTCValue * currentBTCPrice.value,
+      }
     }
   })
 
-  const assetsWithPrices = await Promise.all(assetsPromises);
+  const assetsWithPrices = await Promise.all(assetsPromises)
 
   return {
     props: {
