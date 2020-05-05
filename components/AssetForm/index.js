@@ -70,8 +70,18 @@ function AssetForm(props) {
       delete: handleDelete,
     }
 
+    const userAction = event.target.innerHTML.toLowerCase()
+
+    if ( userAction === 'delete' ) {
+      const message = `
+        Are you sure ? This action is irreversible.
+      `
+
+      if ( !window.confirm(message) ) { return }
+    }
+
     try {
-      const response = await actions[event.target.innerHTML.toLowerCase()]()
+      const response = await actions[userAction]()
       const result = await response.json()
 
       if ( result.success ) {

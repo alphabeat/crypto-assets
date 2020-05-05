@@ -10,6 +10,14 @@ function Layout({ children }) {
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
       { children }
+      <footer className="footer">
+        <div className="content has-text-centered">
+          <p>
+            <strong>CryptoAssets</strong> by Julien Kilo.
+            The source code is licensed <a href="http://opensource.org/licenses/mit-license.php">MIT</a>.
+          </p>
+        </div>
+      </footer>
     </div>
   )
 }

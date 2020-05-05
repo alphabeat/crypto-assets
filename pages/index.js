@@ -10,7 +10,7 @@ import Ticker from '../components/Ticker'
 
 import { fetchTickerPrice } from "../lib/tickers"
 
-const KRAKEN_TICKERS = [{
+const DEFAULT_TICKERS = [{
   platform: 'kraken',
   coin: 'BTC',
   market: 'EUR',
@@ -28,23 +28,34 @@ const KRAKEN_TICKERS = [{
   market: 'USD',
 }]
 
+const getTickerId = ({ platform, coin, market }) => `${platform}-${coin}-${market}`
+
 function Home(props) {
   const { assets, tickers } = props
-  const [displayModal, toggleModal] = useState(false)
-  const [selectedAsset, setSelected] = useState(null)
 
-  const handleModalClose = () => {
+  const [displayAssetModal, toggleAssetModal] = useState(false)
+  const [selectedAsset, setSelected] = useState(null)
+  const [userTickers, setUserTickers] = useState(tickers)
+
+  const handleAssetModalClose = () => {
     setSelected(null)
-    toggleModal(false)
+    toggleAssetModal(false)
   }
 
   const handleAssetClick = (asset) => {
     setSelected(asset)
-    toggleModal(true)
+    toggleAssetModal(true)
   }
 
-  const mappedTickers = tickers.map(ticker =>
-    <Ticker key={`${ticker.coin}-${ticker.market}`} {...ticker} />
+  const handleTickerDelete = (tickerId) => {
+    setUserTickers([
+      ...userTickers.filter(userTicker => userTicker.id !== tickerId),
+      { id: `empty-slot-${userTickers.length}` }
+    ])
+  }
+
+  const mappedTickers = userTickers.map(ticker =>
+    <Ticker key={ ticker.id } {...ticker} onDelete={() => handleTickerDelete(ticker.id)} />
   )
 
   const mappedAssets = assets
@@ -59,7 +70,7 @@ function Home(props) {
     return (
       <button
         className="button is-fullwidth is-info is-outlined"
-        onClick={() => toggleModal(true)}
+        onClick={() => toggleAssetModal(true)}
       >
         <span className="icon is-small">
           <FontAwesomeIcon icon={ faPlus } />
@@ -105,8 +116,8 @@ function Home(props) {
         </div>
       </div>
       <AssetForm
-        show={ displayModal }
-        handleClose={ handleModalClose }
+        show={ displayAssetModal }
+        handleClose={ handleAssetModalClose }
         asset={ selectedAsset }
       />
     </Layout>
@@ -117,8 +128,9 @@ export async function getServerSideProps() {
   const fetchAssetsResponse = await fetch('http://localhost:3000/api')
   const assets = await fetchAssetsResponse.json()
 
-  const tickers = await Promise.all(KRAKEN_TICKERS.map(async (ticker) => ({
+  const tickers = await Promise.all(DEFAULT_TICKERS.map(async (ticker) => ({
     ...ticker,
+    id: getTickerId(ticker),
     value: await fetchTickerPrice(ticker),
   })))
 
