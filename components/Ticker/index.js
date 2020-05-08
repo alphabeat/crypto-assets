@@ -2,7 +2,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrashAlt } from '@fortawesome/free-regular-svg-icons'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 
-import { PLATFORM_COLOR } from '../../lib/const'
 import IconText from '../IconText'
 
 function Ticker(props) {
@@ -45,7 +44,6 @@ function Ticker(props) {
   }
 
   const renderBoxContent = () => {
-    const platformColor = PLATFORM_COLOR[platform]
     const valueColor = `has-text-${Number(value) === 0 ? 'danger' : 'grey'}`
 
     return (
@@ -60,7 +58,7 @@ function Ticker(props) {
             </p>
           </div>
           <div className="box-overlay">
-            <div className={`tag is-${platformColor} is-capitalized`}>
+            <div className={`tag is-link is-light is-capitalized`}>
               { platform }
             </div>
             <span className="icon has-text-danger"  onClick={ handleDelete }>

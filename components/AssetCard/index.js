@@ -1,7 +1,6 @@
 import { faEuroSign } from '@fortawesome/free-solid-svg-icons'
 import { faBtc } from '@fortawesome/free-brands-svg-icons'
 
-import { PLATFORM_COLOR } from '../../lib/const'
 import IconText from '../IconText'
 
 function AssetCard(props) {
@@ -16,7 +15,6 @@ function AssetCard(props) {
   } = props
 
   const isCurrentValueUp = currentBTCValue >= initialValue
-  const platformColor = PLATFORM_COLOR[platform.toLowerCase()]
   const currentValueBackground = isCurrentValueUp ? '#effaf3' : '#fffbeb'
   const currentValueTextColor = isCurrentValueUp ? '#257942' : '#947600'
 
@@ -28,7 +26,9 @@ function AssetCard(props) {
             { coin }
           </p>
           <p className="card-header-icon">
-            <span className={`tag is-${platformColor} is-capitalized`}>{ platform }</span>
+            <span className={`tag is-link is-light is-capitalized`}>
+              { platform }
+            </span>
           </p>
         </header>
         <div className="card-content has-text-centered">
