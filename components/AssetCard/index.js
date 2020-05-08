@@ -1,14 +1,8 @@
 import { faEuroSign } from '@fortawesome/free-solid-svg-icons'
 import { faBtc } from '@fortawesome/free-brands-svg-icons'
 
+import { PLATFORM_COLOR } from '../../lib/const'
 import IconText from '../IconText'
-
-const PLATFORM_COLOR = {
-  bittrex: 'primary',
-  kraken: 'success',
-  waves: 'warning',
-  chronomint: 'danger',
-}
 
 function AssetCard(props) {
   const {

@@ -1,30 +1,30 @@
-const { client, query } = require('../../lib/faunadb')
+const { client, query } = require('../../../lib/faunadb')
 
-async function getAllAssets(res) {
+async function getAllTickers(res) {
   try {
-    const assets = await client.query(
+    const tickers = await client.query(
       query.Map(
         query.Paginate(
           query.Match(
-            query.Index('allAssets')
+            query.Index('allTickers')
           )
         ),
         (ref) => query.Get(ref)
       )
     )
 
-    res.status(200).json(assets.data)
+    res.status(200).json(tickers.data)
   }
   catch (e) {
     res.status(500).json({ error: e.message })
   }
 }
 
-async function createAsset(data, res) {
+async function createTicker(data, res) {
   try {
     await client.query(
       query.Create(
-        query.Collection('assets'),
+        query.Collection('tickers'),
         { data: JSON.parse(data) }
       )
     )
@@ -38,8 +38,8 @@ async function createAsset(data, res) {
 
 module.exports = async (req, res) => {
   if ( req.method === 'POST' ) {
-    return createAsset(req.body, res)
+    return createTicker(req.body, res)
   }
 
-  await getAllAssets(res)
+  await getAllTickers(res)
 }

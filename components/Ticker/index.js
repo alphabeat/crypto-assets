@@ -2,12 +2,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrashAlt } from '@fortawesome/free-regular-svg-icons'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 
+import { PLATFORM_COLOR } from '../../lib/const'
 import IconText from '../IconText'
 
 function Ticker(props) {
-  const { coin, market, onDelete, value } = props
+  const { coin, market, onAdd, onDelete, platform, value } = props
 
-  const isEmpty = !Boolean(value)
+  const isEmpty = value == null
 
   const handleDelete = () => {
     const message = `
@@ -21,7 +22,10 @@ function Ticker(props) {
 
   const renderPlaceholder = () => {
     return (
-      <article className="tile is-child box empty-box has-background-white-bis has-text-info">
+      <article
+        className="tile is-child box empty-box has-background-white-bis has-text-info"
+        onClick={() => onAdd()}
+      >
         <IconText icon={ faPlus } text="Add ticker" />
         <style>{`
           .empty-box {
@@ -41,31 +45,40 @@ function Ticker(props) {
   }
 
   const renderBoxContent = () => {
+    const platformColor = PLATFORM_COLOR[platform]
+    const valueColor = `has-text-${Number(value) === 0 ? 'danger' : 'grey'}`
+
     return (
       <article className="tile is-child box has-background-light">
         <div className="box-content">
           <div className="ticker-price">
-            <p className="title has-text-grey">
+            <p className={`title ${valueColor}`}>
               { value.toFixed(2) }
             </p>
             <p className="subtitle has-text-grey">
               { coin } / { market }
             </p>
           </div>
-          <div className="delete-icon has-text-danger" onClick={ handleDelete }>
-            <FontAwesomeIcon icon={ faTrashAlt } />
+          <div className="box-overlay">
+            <div className={`tag is-${platformColor} is-capitalized`}>
+              { platform }
+            </div>
+            <span className="icon has-text-danger"  onClick={ handleDelete }>
+              <FontAwesomeIcon icon={ faTrashAlt } />
+            </span>
           </div>
         </div>
         <style jsx>{`
           .box {
-            cursor: pointer;
+            padding: 0;
           }
 
           .box-content {
             position: relative;
+            padding: 1.25rem;
           }
 
-          .box-content:hover .delete-icon {
+          .box-content:hover .box-overlay .icon {
             opacity: 1;
           }
 
@@ -73,11 +86,20 @@ function Ticker(props) {
             position: relative;
           }
 
-          .delete-icon {
+          .box-overlay {
+            height: 100%;
             position: absolute;
+            top: 0;
             right: 0;
-            top: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+          }
+
+          .box-overlay .icon {
+            cursor: pointer;
             opacity: 0;
+            flex-grow: 1;
           }
         `}</style>
       </article>

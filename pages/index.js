@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import fetch from 'node-fetch'
+import Router from 'next/router'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 
@@ -7,35 +8,31 @@ import AssetCard from '../components/AssetCard'
 import AssetForm from '../components/AssetForm'
 import Layout from '../components/Layout'
 import Ticker from '../components/Ticker'
+import TickerForm from '../components/TickerForm'
 
 import { fetchTickerPrice } from "../lib/tickers"
 
-const DEFAULT_TICKERS = [{
-  platform: 'kraken',
-  coin: 'BTC',
-  market: 'EUR',
-}, {
-  platform: 'kraken',
-  coin: 'BTC',
-  market: 'USD',
-}, {
-  platform: 'kraken',
-  coin: 'ETH',
-  market: 'EUR',
-}, {
-  platform: 'kraken',
-  coin: 'ETH',
-  market: 'USD',
-}]
+const getEmptyTicker = (index) => ({
+  ref: {
+    '@ref': {
+      id: `empty-slot-${index}`,
+    },
+  },
+})
 
-const getTickerId = ({ platform, coin, market }) => `${platform}-${coin}-${market}`
+const getRecordId = (record) => record.ref['@ref'].id
 
 function Home(props) {
   const { assets, tickers } = props
+  const initialUserTickers = [
+    ...tickers,
+    tickers.length < 4 && getEmptyTicker(tickers.length),
+  ].filter(Boolean)
 
   const [displayAssetModal, toggleAssetModal] = useState(false)
+  const [displayTickerModal, toggleTickerModal] = useState(false)
   const [selectedAsset, setSelected] = useState(null)
-  const [userTickers, setUserTickers] = useState(tickers)
+  const [userTickers, setUserTickers] = useState(initialUserTickers)
 
   const handleAssetModalClose = () => {
     setSelected(null)
@@ -47,22 +44,43 @@ function Home(props) {
     toggleAssetModal(true)
   }
 
-  const handleTickerDelete = (tickerId) => {
-    setUserTickers([
-      ...userTickers.filter(userTicker => userTicker.id !== tickerId),
-      { id: `empty-slot-${userTickers.length}` }
-    ])
+  const handleTickerDelete = async (tickerId) => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/tickers/${tickerId}`, {
+        method: 'DELETE',
+      })
+      const result = await response.json()
+
+      if ( result.success ) {
+        Router.reload()
+      }
+    }
+    catch (e) {
+      console.error(e.message)
+    }
   }
 
-  const mappedTickers = userTickers.map(ticker =>
-    <Ticker key={ ticker.id } {...ticker} onDelete={() => handleTickerDelete(ticker.id)} />
-  )
+  const mappedTickers = userTickers.map(ticker => {
+    const id = getRecordId(ticker)
+
+    return (
+      <Ticker
+        key={ id }
+        onDelete={() => handleTickerDelete(id)}
+        onAdd={() => toggleTickerModal(true)}
+        { ...ticker.data }
+      />
+    )
+  })
 
   const mappedAssets = assets
     .sort((a, b) => a.data.coin.localeCompare(b.data.coin))
     .map(asset =>
-      <div key={ asset.ref['@ref'].id } className="column is-one-third">
-        <AssetCard {...asset.data} onClick={() => handleAssetClick(asset)} />
+      <div key={ getRecordId(asset) } className="column is-one-third">
+        <AssetCard
+          onClick={() => handleAssetClick(asset)}
+          { ...asset.data }
+        />
       </div>
     )
 
@@ -115,6 +133,10 @@ function Home(props) {
           </div>
         </div>
       </div>
+      <TickerForm
+        show={ displayTickerModal }
+        handleClose={() => toggleTickerModal(false)}
+      />
       <AssetForm
         show={ displayAssetModal }
         handleClose={ handleAssetModalClose }
@@ -125,16 +147,38 @@ function Home(props) {
 }
 
 export async function getServerSideProps() {
-  const fetchAssetsResponse = await fetch('http://localhost:3000/api')
-  const assets = await fetchAssetsResponse.json()
+  const [fetchTickersResponse, fetchAssetsResponse] = await Promise.all([
+    fetch('http://localhost:3000/api/tickers'),
+    fetch('http://localhost:3000/api/assets'),
+  ])
 
-  const tickers = await Promise.all(DEFAULT_TICKERS.map(async (ticker) => ({
-    ...ticker,
-    id: getTickerId(ticker),
-    value: await fetchTickerPrice(ticker),
-  })))
+  const [tickers, assets] = await Promise.all([
+    fetchTickersResponse.json(),
+    fetchAssetsResponse.json(),
+  ])
 
-  const currentBTCPrice = tickers.find(({ coin, market }) => coin === 'BTC' && market === 'EUR')
+  const tickersWithPrices = await Promise.all(
+    tickers.map(async (ticker) => ({
+      ...ticker,
+      data: {
+        ...ticker.data,
+        value: await fetchTickerPrice(ticker.data),
+      },
+    }))
+  )
+
+  let currentBTCPrice = tickersWithPrices.find(ticker => {
+    const { coin, market } = ticker.data
+
+    return coin === 'BTC' && market === 'EUR'
+  })
+
+  if ( !currentBTCPrice ) {
+    const currentBTCEURPrice = await fetchTickerPrice({ platform: 'bittrex', coin: 'BTC', market: 'EUR' })
+
+    currentBTCPrice = { data: { value: currentBTCEURPrice } }
+  }
+
   const assetsPromises = assets.map(async (asset) => {
     const { platform, coin, balance } = asset.data
 
@@ -149,7 +193,7 @@ export async function getServerSideProps() {
       data: {
         ...asset.data,
         currentBTCValue,
-        currentEURValue: currentBTCValue * currentBTCPrice.value,
+        currentEURValue: currentBTCValue * currentBTCPrice.data.value,
       }
     }
   })
@@ -158,7 +202,7 @@ export async function getServerSideProps() {
 
   return {
     props: {
-      tickers,
+      tickers: tickersWithPrices,
       assets: assetsWithPrices,
     },
   }

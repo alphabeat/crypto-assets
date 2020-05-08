@@ -37,7 +37,7 @@ function AssetForm(props) {
   }
 
   const handleCreate = async () => {
-    return fetch('http://localhost:3000/api', {
+    return fetch('http://localhost:3000/api/assets', {
       method: 'POST',
       body: JSON.stringify(fields),
     })
@@ -49,14 +49,14 @@ function AssetForm(props) {
       data: fields,
     }
 
-    return fetch(`http://localhost:3000/api/${assetId}`, {
+    return fetch(`http://localhost:3000/api/assets/${assetId}`, {
       method: 'PUT',
       body: JSON.stringify(data),
     })
   }
 
   const handleDelete = async () => {
-    return fetch(`http://localhost:3000/api/${assetId}`, {
+    return fetch(`http://localhost:3000/api/assets/${assetId}`, {
       method: 'DELETE',
     })
   }
@@ -86,9 +86,6 @@ function AssetForm(props) {
 
       if ( result.success ) {
         Router.reload()
-      }
-      else {
-        throw new Error(result.error)
       }
     }
     catch (e) {

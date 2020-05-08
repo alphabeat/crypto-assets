@@ -1,4 +1,4 @@
-const { client, query } = require('../../lib/faunadb')
+const { client, query } = require('../../../lib/faunadb')
 
 async function updateAsset(id, asset, res) {
   try {
