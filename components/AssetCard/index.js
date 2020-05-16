@@ -2,6 +2,7 @@ import { faEuroSign } from '@fortawesome/free-solid-svg-icons'
 import { faBtc } from '@fortawesome/free-brands-svg-icons'
 
 import IconText from '../IconText'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 function AssetCard(props) {
   const {
@@ -55,7 +56,9 @@ function AssetCard(props) {
         <footer className="card-footer">
           <div className="card-footer-item">
             <div className="title is-6 has-text-info">
-              <IconText icon={ faEuroSign } text={ currentEURValue.toFixed(2) } />
+              { currentEURValue.toFixed(2) }
+              {' '}
+              <FontAwesomeIcon icon={ faEuroSign } />
             </div>
           </div>
         </footer>
