@@ -120,7 +120,7 @@ function Dashboard(props) {
   }
 
   return (
-    <Layout>
+    <Layout hasHero>
       <div className="Dashboard">
         <div className="container">
           <div className="columns is-centered">

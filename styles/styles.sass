@@ -7,15 +7,109 @@ body
   min-height: 100%
   background-color: #fafafa
 
-.Layout main
-  min-height: calc(100vh - 310px)
-  padding: 1rem 0
+.Layout
+  main
+    min-height: calc(100vh - 310px)
+    padding: 1rem 0
 
 .Home
+  .background
+    width: 100%
+    height: 760px
+    background: linear-gradient(150deg, $link 15%, $primary 70%, lighten($primary, 30%) 94%)
+    position: absolute
+    top: 0
+    transform: skewY(-12deg)
+    transform-origin: 0
+
+    span
+      height: 190px
+      position: absolute
+
+      &:nth-child(1)
+        width: calc(100% / 3)
+        left: calc(calc(calc(100% / 3) / 2) * -1)
+        background: darken($link, 2%)
+
+      &:nth-child(2)
+        width: calc(100% / 3)
+        left: calc(calc(100% / 3) / 2)
+        right: auto
+        background: #3273dc
+
+      &:nth-child(3)
+        width: calc(100% / 3)
+        left: calc(calc(calc(100% / 3) / 2) + calc(100% / 3))
+        bottom: auto
+        background: darken($link, 5%)
+
+      &:nth-child(4)
+        width: calc(100% / 3)
+        bottom: 0
+        background: darken($primary, 5%)
+
+  .text
+    position: relative
+    margin: 150px 0 0 150px
+    display: flex
+    flex-direction: column
+    justify-content: center
+    color: white
+    max-width: 1024px
+    margin-bottom: 4rem
+
+    h1
+      font-size: 3rem
+      opacity: 0
+      animation: fadein 1s
+      animation-delay: 0.2s
+      animation-fill-mode: forwards
+
+    p.description
+      margin-bottom: 3rem
+      color: #d9fcff
+      font-size: 20px
+      max-width: 50%
+      font-size: 1.8rem
+      line-height: 28px
+      opacity: 0
+      animation: fadein 1s
+      animation-delay: 0.8s
+      animation-fill-mode: forwards
+
+    button
+      width: calc(100% / 3)
+      align-self: center
+      opacity: 0
+      animation: fadein 1s
+      animation-delay: 0.8s
+      animation-fill-mode: forwards
+
   .search-bar
+    margin-top: 10rem
     display: flex
     flex-direction: column
     align-items: center
+
+    .title
+      color: $link
+
+    .control
+      width: 16rem
+      margin-bottom: .5rem
+
+      &.dashboard-id
+        input
+          margin: 0
+          color: $link
+          text-align: center
+          font-size: 1.4rem
+          font-weight: 600
+          letter-spacing: .375rem
+
+          &::placeholder
+            color: $link
+            letter-spacing: 1.25rem
 
 .Dashboard
   .info-tiles
@@ -26,3 +120,11 @@ body
     display: flex
     align-items: center
     justify-content: flex-end
+
+
+@keyframes fadein
+  0%
+    opacity: 0
+
+  100%
+    opacity: 1

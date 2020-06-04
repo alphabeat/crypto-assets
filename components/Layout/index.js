@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import '../../styles/styles.sass'
 
-function Layout({ children }) {
+function Layout({ hasHero, children }) {
   return (
     <div className="Layout">
       <Head>
@@ -9,18 +9,24 @@ function Layout({ children }) {
         <meta charSet="utf-8" />
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
-      <header className="hero is-link is-small has-text-centered">
-        <div className="hero-body">
-          <div className="container">
-            <h1 className="title">
-              Crypto Assets
-            </h1>
-            <h2 className="subtitle">
-              Follow-up of your assets
-            </h2>
-          </div>
-        </div>
-      </header>
+      {
+        hasHero
+          ? (
+            <header className="hero is-link is-small has-text-centered">
+              <div className="hero-body">
+                <div className="container">
+                  <h1 className="title">
+                    Crypto Assets
+                  </h1>
+                  <h2 className="subtitle">
+                    Follow-up of your assets
+                  </h2>
+                </div>
+              </div>
+            </header>
+          )
+          : null
+      }
       <main>
         { children }
       </main>

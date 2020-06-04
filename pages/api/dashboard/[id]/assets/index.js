@@ -40,8 +40,6 @@ async function createAsset(data, res) {
 module.exports = async (req, res) => {
   const { body, method, query } = req
 
-  console.log(query)
-
   if ( method === 'POST' ) {
     return createAsset(body, res)
   }
