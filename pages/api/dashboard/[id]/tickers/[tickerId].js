@@ -1,4 +1,4 @@
-const { client, query } = require('../../../lib/faunadb')
+const { client, query } = require('../../../../../lib/faunadb')
 
 async function deleteTicker(id, res) {
   try {
@@ -19,7 +19,7 @@ module.exports = async (req, res) => {
   const { method, query } = req
 
   if ( method === 'DELETE' ) {
-    return deleteTicker(query.id, res)
+    return deleteTicker(query.tickerId, res)
   }
 
   res.status(400).json({ error: `Unhandled method ${method}` })

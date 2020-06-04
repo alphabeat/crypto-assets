@@ -1,12 +1,13 @@
-const { client, query } = require('../../../lib/faunadb')
+const { client, query } = require('../../../../../lib/faunadb')
 
-async function getAllAssets(res) {
+async function getAssets(dashboardRef, res) {
   try {
     const assets = await client.query(
       query.Map(
         query.Paginate(
           query.Match(
-            query.Index('allAssets')
+            query.Index('all_dashboard_assets'),
+            dashboardRef
           )
         ),
         (ref) => query.Get(ref)
@@ -37,9 +38,13 @@ async function createAsset(data, res) {
 }
 
 module.exports = async (req, res) => {
-  if ( req.method === 'POST' ) {
-    return createAsset(req.body, res)
+  const { body, method, query } = req
+
+  console.log(query)
+
+  if ( method === 'POST' ) {
+    return createAsset(body, res)
   }
 
-  await getAllAssets(res)
+  await getAssets(query.id, res)
 }

@@ -1,4 +1,4 @@
-const { client, query } = require('../../../lib/faunadb')
+const { client, query } = require('../../../../lib/faunadb')
 
 async function getDashboard(id, res) {
   try {
@@ -11,7 +11,7 @@ async function getDashboard(id, res) {
       )
     )
 
-    res.status(200).json(dashboard.data)
+    res.status(200).json(dashboard)
   }
   catch (e) {
     res.status(500).json({ error: e.message })

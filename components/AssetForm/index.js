@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react'
 import Router from 'next/router'
 
 function AssetForm(props) {
-  const { show, handleClose, asset } = props
+  const { show, handleClose, asset, dashboardRef } = props
+
+  const API_URL = `http://localhost:3000/api/dashboard/${dashboardRef}`
 
   const INPUT_FIELDS = ['coin', 'balance', 'platform', 'initialValue']
 
@@ -10,7 +12,7 @@ function AssetForm(props) {
   const initialState = INPUT_FIELDS.reduce((acc, field) => ({
     ...acc,
     [field]: isUpdate && asset.data[field] || '',
-  }), {})
+  }), { dashboard: dashboardRef })
 
   const { id: assetId } = isUpdate ? asset.ref['@ref'] : { id: null }
 
@@ -37,7 +39,7 @@ function AssetForm(props) {
   }
 
   const handleCreate = async () => {
-    return fetch('http://localhost:3000/api/assets', {
+    return fetch(`${API_URL}/assets`, {
       method: 'POST',
       body: JSON.stringify(fields),
     })
@@ -49,14 +51,14 @@ function AssetForm(props) {
       data: fields,
     }
 
-    return fetch(`http://localhost:3000/api/assets/${assetId}`, {
+    return fetch(`${API_URL}/assets/${assetId}`, {
       method: 'PUT',
       body: JSON.stringify(data),
     })
   }
 
   const handleDelete = async () => {
-    return fetch(`http://localhost:3000/api/assets/${assetId}`, {
+    return fetch(`${API_URL}/assets/${assetId}`, {
       method: 'DELETE',
     })
   }

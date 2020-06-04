@@ -2,13 +2,15 @@ import { useState } from 'react'
 import Router from 'next/router'
 
 function TickerForm(props) {
-  const { show, handleClose } = props
+  const { show, handleClose, dashboardRef } = props
+
+  const API_URL = `http://localhost:3000/api/dashboard/${dashboardRef}`
 
   const INPUT_FIELDS = ['platform', 'coin', 'market']
   const initialState = INPUT_FIELDS.reduce((acc, field) => ({
     ...acc,
     [field]: '',
-  }), {})
+  }), { dashboard: dashboardRef })
 
   const [fields, setFields] = useState(initialState)
 
@@ -32,7 +34,7 @@ function TickerForm(props) {
     event.persist()
 
     try {
-      const response = await fetch('http://localhost:3000/api/tickers', {
+      const response = await fetch(`${API_URL}/tickers`, {
         method: 'POST',
         body: JSON.stringify(fields),
       })

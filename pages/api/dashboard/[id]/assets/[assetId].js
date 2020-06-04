@@ -1,4 +1,4 @@
-const { client, query } = require('../../../lib/faunadb')
+const { client, query } = require('../../../../../lib/faunadb')
 
 async function updateAsset(id, asset, res) {
   try {
@@ -35,10 +35,11 @@ module.exports = async (req, res) => {
   const { body, method, query } = req
 
   if ( method === 'PUT' ) {
-    return updateAsset(query.id, JSON.parse(body), res)
+    return updateAsset(query.assetId, JSON.parse(body), res)
   }
-  else if ( method === 'DELETE' ) {
-    return deleteAsset(query.id, res)
+
+  if ( method === 'DELETE' ) {
+    return deleteAsset(query.assetId, res)
   }
 
   res.status(400).json({ error: `Unhandled method ${method}` })

@@ -1,12 +1,13 @@
-const { client, query } = require('../../../lib/faunadb')
+const { client, query } = require('../../../../../lib/faunadb')
 
-async function getAllTickers(res) {
+async function getTickers(dashboardRef, res) {
   try {
     const tickers = await client.query(
       query.Map(
         query.Paginate(
           query.Match(
-            query.Index('allTickers')
+            query.Index('all_dashboard_tickers'),
+            dashboardRef
           )
         ),
         (ref) => query.Get(ref)
@@ -37,9 +38,11 @@ async function createTicker(data, res) {
 }
 
 module.exports = async (req, res) => {
-  if ( req.method === 'POST' ) {
-    return createTicker(req.body, res)
+  const { body, method, query } = req
+
+  if ( method === 'POST' ) {
+    return createTicker(body, res)
   }
 
-  await getAllTickers(res)
+  await getTickers(query.id, res)
 }

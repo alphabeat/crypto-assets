@@ -3,17 +3,20 @@ import fetch from 'node-fetch'
 import Error from 'next/error'
 import Router from 'next/router'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faGripHorizontal, faChartPie, faArrowCircleLeft } from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faGripHorizontal, faChartPie } from '@fortawesome/free-solid-svg-icons'
 
 import AssetCard from '../../components/AssetCard'
 import AssetForm from '../../components/AssetForm'
 import AssetsPieChart from '../../components/AssetsPieChart'
-import IconText from '../../components/IconText'
 import Layout from '../../components/Layout'
 import Ticker from '../../components/Ticker'
 import TickerForm from '../../components/TickerForm'
 
 import { fetchTickerPrice } from "../../lib/tickers"
+
+const API_BASE_URL = `http://localhost:3000/api/dashboard`
+
+const getDashboardUrl = (id) => `${API_BASE_URL}/${id}`
 
 const getEmptyTicker = (index) => ({
   ref: {
@@ -35,7 +38,7 @@ const fetchTickersWithPrices = (tickers) =>
   })))
 
 function Dashboard(props) {
-  const { error, assets, tickers } = props
+  const { error, assets, tickers, dashboardRef } = props
 
   if ( error ) {
     return <Error statusCode={ 404 } />
@@ -63,7 +66,8 @@ function Dashboard(props) {
 
   const handleTickerDelete = async (tickerId) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/tickers/${tickerId}`, {
+      const dashboardUrl = getDashboardUrl(dashboardRef)
+      const response = await fetch(`${dashboardUrl}/tickers/${tickerId}`, {
         method: 'DELETE',
       })
       const result = await response.json()
@@ -207,11 +211,13 @@ function Dashboard(props) {
       <TickerForm
         show={ displayTickerModal }
         handleClose={() => toggleTickerModal(false)}
+        dashboardRef={ dashboardRef }
       />
       <AssetForm
         show={ displayAssetModal }
         handleClose={ handleAssetModalClose }
         asset={ selectedAsset }
+        dashboardRef={ dashboardRef }
       />
     </Layout>
   )
@@ -221,7 +227,9 @@ export async function getServerSideProps(context) {
   const { params } = context
   const { id } = params
 
-  const fetchDashboardResponse = await fetch(`http://localhost:3000/api/dashboard/${id}`)
+  const dashboardUrlWithId = getDashboardUrl(id)
+
+  const fetchDashboardResponse = await fetch(dashboardUrlWithId)
   
   if ( !fetchDashboardResponse.ok ) {
     return {
@@ -231,15 +239,18 @@ export async function getServerSideProps(context) {
 
   const dashboard = await fetchDashboardResponse.json()
 
-  if ( dashboard.isDashboardProtected ) {
+  if ( dashboard.data.isDashboardProtected ) {
     return {
       props: { login: true },
     }
   }
 
+  const dashboardRef = getRecordId(dashboard)
+  const dashboardUrlWithRef = getDashboardUrl(dashboardRef)
+
   const [fetchTickersResponse, fetchAssetsResponse] = await Promise.all([
-    fetch('http://localhost:3000/api/tickers'),
-    fetch('http://localhost:3000/api/assets'),
+    fetch(`${dashboardUrlWithRef}/tickers`),
+    fetch(`${dashboardUrlWithRef}/assets`),
   ])
 
   const [tickers, assets] = await Promise.all([
@@ -256,7 +267,11 @@ export async function getServerSideProps(context) {
   })
 
   if ( !currentBTCPrice ) {
-    const currentBTCEURPrice = await fetchTickerPrice({ platform: 'bittrex', coin: 'BTC', market: 'EUR' })
+    const currentBTCEURPrice = await fetchTickerPrice({
+      platform: 'bittrex',
+      coin: 'BTC',
+      market: 'EUR',
+    })
 
     currentBTCPrice = { data: { value: currentBTCEURPrice } }
   }
@@ -286,6 +301,7 @@ export async function getServerSideProps(context) {
     props: {
       tickers: tickersWithPrices,
       assets: assetsWithPrices,
+      dashboardRef,
     },
   }
 }
