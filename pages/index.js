@@ -1,14 +1,16 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/router'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus, faArrowRight } from '@fortawesome/free-solid-svg-icons'
 
+import DashboardForm from '../components/DashboardForm'
 import IconText from '../components/IconText'
 import Layout from '../components/Layout'
 
 function Home() {
   const [dashboardId, setDashboardId] = useState('')
+  const [displayModal, toggleModal] = useState(false)
   const router = useRouter()
 
   async function handleSubmit(event) {
@@ -32,7 +34,7 @@ function Home() {
             <p className="description">
               Create your own dashboard to monitor the value of your crypto assets stored on various exchanges.
             </p>
-            <button className="button is-link is-large">
+            <button className="button is-link is-large" onClick={() => toggleModal(true)}>
               <IconText icon={ faPlus } text="Create new dashboard" />
             </button>
           </div>
@@ -69,6 +71,16 @@ function Home() {
             </form>
           </div>
         </div>
+        {
+          displayModal
+          ? (
+            <DashboardForm
+              show ={ displayModal }
+              handleClose={() => toggleModal(false)}
+            />
+          )
+          : null
+        }
       </div>
     </Layout>
   )

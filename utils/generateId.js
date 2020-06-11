@@ -2,7 +2,7 @@ const ALPHABET = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 const ID_LENGTH = 8;
 
-export default () => {
+module.exports = () => {
   let rtn = '';
 
   for (let i = 0; i < ID_LENGTH; i++) {
