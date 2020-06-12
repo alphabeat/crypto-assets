@@ -1,6 +1,12 @@
+import { IconProp } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-function IconText(props) {
+interface IconTextProps {
+  icon: IconProp
+  text: string
+}
+
+function IconText(props: IconTextProps) {
   const { icon, text } = props
 
   return (

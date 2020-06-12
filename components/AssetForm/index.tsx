@@ -1,7 +1,29 @@
 import { useState, useEffect } from 'react'
 import Router from 'next/router'
 
-function AssetForm(props) {
+type FormElement = HTMLButtonElement | HTMLSelectElement
+
+interface AssetFields {
+  coin: string
+  balance: number
+  platform: string
+  initialValue: number
+  dashboard: string
+}
+
+interface FaunadbResult {
+  ref: object
+  data: AssetFields
+}
+
+interface AssetFormProps {
+  show: boolean
+  handleClose: (event?: React.MouseEvent<HTMLButtonElement>) => void
+  asset: FaunadbResult
+  dashboardRef: string
+}
+
+function AssetForm(props: AssetFormProps) {
   const { show, handleClose, asset, dashboardRef } = props
 
   const API_URL = `/api/dashboard/${dashboardRef}`
@@ -9,10 +31,18 @@ function AssetForm(props) {
   const INPUT_FIELDS = ['coin', 'balance', 'platform', 'initialValue']
 
   const isUpdate = Boolean(asset)
-  const initialState = INPUT_FIELDS.reduce((acc, field) => ({
+
+  const defaultFields = {
+    coin: '',
+    balance: 0,
+    platform: '',
+    initialValue: 0,
+    dashboard: dashboardRef,
+  }
+  const initialState = INPUT_FIELDS.reduce((acc: AssetFields, field) => ({
     ...acc,
-    [field]: isUpdate && asset.data[field] || '',
-  }), { dashboard: dashboardRef })
+    [field]: isUpdate ? asset.data[field] : acc[field],
+  }), defaultFields)
 
   const { id: assetId } = isUpdate ? asset.ref['@ref'] : { id: null }
 
@@ -22,11 +52,11 @@ function AssetForm(props) {
     setFields(initialState)
   }, [asset])
 
-  const handleInputChange = (event) => {
+  const handleInputChange = (event: React.ChangeEvent<FormElement>) => {
     event.persist()
 
     const { name, value, type } = event.target
-    let parsedValue = value
+    let parsedValue: string | number = value
 
     if ( type === 'number' ) {
       parsedValue = parseFloat(value)

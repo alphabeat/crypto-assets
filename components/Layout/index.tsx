@@ -2,8 +2,8 @@ import Head from 'next/head'
 import '../../styles/styles.sass'
 
 interface LayoutProps {
-  hasHero: boolean;
-  children: JSX.Element;
+  hasHero: boolean
+  children: JSX.Element
 }
 
 function Layout(props: LayoutProps) {
