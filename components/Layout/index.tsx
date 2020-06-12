@@ -1,7 +1,14 @@
 import Head from 'next/head'
 import '../../styles/styles.sass'
 
-function Layout({ hasHero, children }) {
+interface LayoutProps {
+  hasHero: boolean;
+  children: JSX.Element;
+}
+
+function Layout(props: LayoutProps) {
+  const { hasHero, children } = props
+
   return (
     <div className="Layout">
       <Head>
