@@ -4,7 +4,7 @@ import Router from 'next/router'
 function TickerForm(props) {
   const { show, handleClose, dashboardRef } = props
 
-  const API_URL = `http://localhost:3000/api/dashboard/${dashboardRef}`
+  const API_URL = `/api/dashboard/${dashboardRef}`
 
   const INPUT_FIELDS = ['platform', 'coin', 'market']
   const initialState = INPUT_FIELDS.reduce((acc, field) => ({

@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router'
 
-const API_URL = `http://localhost:3000/api/dashboard`
+const API_URL = '/api/dashboard'
 
 const DEFAULT_TICKERS = [
   { platform: 'bittrex', coin: 'BTC', market: 'EUR' },

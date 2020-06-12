@@ -14,10 +14,6 @@ import TickerForm from '../../components/TickerForm'
 
 import { fetchTickerPrice } from "../../lib/tickers"
 
-const API_BASE_URL = `http://localhost:3000/api/dashboard`
-
-const getDashboardUrl = (id) => `${API_BASE_URL}/${id}`
-
 const getEmptyTicker = (index) => ({
   ref: {
     '@ref': {
@@ -66,7 +62,7 @@ function Dashboard(props) {
 
   const handleTickerDelete = async (tickerId) => {
     try {
-      const dashboardUrl = getDashboardUrl(dashboardRef)
+      const dashboardUrl = `/api/dashboard/${dashboardRef}`
       const response = await fetch(`${dashboardUrl}/tickers/${tickerId}`, {
         method: 'DELETE',
       })
@@ -227,7 +223,10 @@ export async function getServerSideProps(context) {
   const { params } = context
   const { id } = params
 
-  const dashboardUrlWithId = getDashboardUrl(id)
+  const { VERCEL_URL } = process.env
+  const API_BASE_URL = `${VERCEL_URL}/api/dashboard`
+
+  const dashboardUrlWithId = `${API_BASE_URL}/${id}`
 
   const fetchDashboardResponse = await fetch(dashboardUrlWithId)
   
@@ -246,7 +245,7 @@ export async function getServerSideProps(context) {
   }
 
   const dashboardRef = getRecordId(dashboard)
-  const dashboardUrlWithRef = getDashboardUrl(dashboardRef)
+  const dashboardUrlWithRef = `${API_BASE_URL}/${dashboardRef}`
 
   const [fetchTickersResponse, fetchAssetsResponse] = await Promise.all([
     fetch(`${dashboardUrlWithRef}/tickers`),

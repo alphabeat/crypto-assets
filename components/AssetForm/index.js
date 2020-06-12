@@ -4,7 +4,7 @@ import Router from 'next/router'
 function AssetForm(props) {
   const { show, handleClose, asset, dashboardRef } = props
 
-  const API_URL = `http://localhost:3000/api/dashboard/${dashboardRef}`
+  const API_URL = `/api/dashboard/${dashboardRef}`
 
   const INPUT_FIELDS = ['coin', 'balance', 'platform', 'initialValue']
 
@@ -50,6 +50,8 @@ function AssetForm(props) {
       ...asset,
       data: fields,
     }
+
+    console.log('COUCOU', API_URL)
 
     return fetch(`${API_URL}/assets/${assetId}`, {
       method: 'PUT',
