@@ -224,7 +224,7 @@ export async function getServerSideProps(context) {
   const { id } = params
 
   const { VERCEL_URL } = process.env
-  const API_BASE_URL = `${VERCEL_URL}/api/dashboard`
+  const API_BASE_URL = `http://${VERCEL_URL}/api/dashboard`
 
   const dashboardUrlWithId = `${API_BASE_URL}/${id}`
 
