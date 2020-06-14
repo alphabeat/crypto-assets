@@ -3,7 +3,7 @@ import Router from 'next/router'
 
 type FormElement = HTMLButtonElement | HTMLSelectElement
 
-interface AssetFields {
+type AssetFields = {
   coin: string
   balance: number
   platform: string
@@ -11,12 +11,12 @@ interface AssetFields {
   dashboard: string
 }
 
-interface FaunadbResult {
+type FaunadbResult = {
   ref: object
   data: AssetFields
 }
 
-interface AssetFormProps {
+type AssetFormProps = {
   show: boolean
   handleClose: (event?: React.MouseEvent<HTMLButtonElement>) => void
   asset: FaunadbResult
@@ -28,21 +28,20 @@ function AssetForm(props: AssetFormProps) {
 
   const API_URL = `/api/dashboard/${dashboardRef}`
 
-  const INPUT_FIELDS = ['coin', 'balance', 'platform', 'initialValue']
-
   const isUpdate = Boolean(asset)
 
-  const defaultFields = {
-    coin: '',
-    balance: 0,
-    platform: '',
-    initialValue: 0,
-    dashboard: dashboardRef,
-  }
-  const initialState = INPUT_FIELDS.reduce((acc: AssetFields, field) => ({
-    ...acc,
-    [field]: isUpdate ? asset.data[field] : acc[field],
-  }), defaultFields)
+  const initialState = isUpdate
+    ? {
+        ...asset.data,
+        dashboard: dashboardRef,
+      }
+    : {
+      coin: '',
+      balance: 0,
+      platform: '',
+      initialValue: 0,
+      dashboard: dashboardRef,
+    }
 
   const { id: assetId } = isUpdate ? asset.ref['@ref'] : { id: null }
 

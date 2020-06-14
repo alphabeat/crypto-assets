@@ -4,7 +4,16 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons'
 
 import IconText from '../IconText'
 
-function Ticker(props) {
+type TickerProps = {
+  coin: string
+  market: string
+  onAdd: () => void
+  onDelete: () => void
+  platform: string
+  value: number
+}
+
+function Ticker(props: TickerProps) {
   const { coin, market, onAdd, onDelete, platform, value } = props
 
   const isEmpty = value == null
@@ -44,7 +53,7 @@ function Ticker(props) {
   }
 
   const renderBoxContent = () => {
-    const valueColor = `has-text-${Number(value) === 0 ? 'danger' : 'grey'}`
+    const valueColor = `has-text-${value === 0 ? 'danger' : 'grey'}`
 
     return (
       <article className="tile is-child box has-background-light">

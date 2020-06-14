@@ -1,4 +1,10 @@
+///<reference path="../../lib/faunadb.d.ts" />
 import { useRouter } from 'next/router'
+
+type DashboardFormProps = {
+  show: boolean
+  handleClose: (event: React.MouseEvent<HTMLButtonElement>) => void
+}
 
 const API_URL = '/api/dashboard'
 
@@ -16,14 +22,14 @@ const DEFAULT_ASSETS = [
   { platform: 'kraken', coin: 'XRP', balance: 4545, initialValue: 0.00005273 },
 ]
 
-const getRecordId = (record) => record.ref['@ref'].id
+const getRecordId = (record: FaunaDBRecord) => record.ref['@ref'].id
 
-function DashboardForm(props) {
+function DashboardForm(props: DashboardFormProps) {
   const { show, handleClose } = props
   const router = useRouter()
   const activeClass = show ? 'is-active' : ''
 
-  const createRecord = async (recordType, dashboardRef, data) => {
+  const createRecord = async (recordType: string, dashboardRef: string, data: any) => {
     return fetch(`${API_URL}/${dashboardRef}/${recordType}`, {
       method: 'POST',
       body: JSON.stringify({
@@ -33,7 +39,7 @@ function DashboardForm(props) {
     })
   }
 
-  async function createTickersAndAssets(dashboardRef) {
+  async function createTickersAndAssets(dashboardRef: string) {
     return Promise.all([
       ...DEFAULT_TICKERS.map((ticker) => createRecord('tickers', dashboardRef, ticker)),
       ...DEFAULT_ASSETS.map((asset) => createRecord('assets', dashboardRef, asset)),

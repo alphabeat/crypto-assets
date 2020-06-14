@@ -1,16 +1,23 @@
 import { useState } from 'react'
 import Router from 'next/router'
 
-function TickerForm(props) {
+type TickerFormProps = {
+  show: boolean
+  handleClose: () => void
+  dashboardRef: string
+}
+
+function TickerForm(props: TickerFormProps) {
   const { show, handleClose, dashboardRef } = props
 
   const API_URL = `/api/dashboard/${dashboardRef}`
 
-  const INPUT_FIELDS = ['platform', 'coin', 'market']
-  const initialState = INPUT_FIELDS.reduce((acc, field) => ({
-    ...acc,
-    [field]: '',
-  }), { dashboard: dashboardRef })
+  const initialState = {
+    platform: '',
+    coin: '',
+    market: '',
+    dashboard: dashboardRef,
+  }
 
   const [fields, setFields] = useState(initialState)
 

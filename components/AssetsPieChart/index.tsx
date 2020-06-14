@@ -3,12 +3,40 @@ import { Cell, Pie, PieChart, Sector } from 'recharts'
 
 const COLORS = ['#00D1B2', '#3298DC', '#48C774', '#FFDD57', '#F14668']
 
-function AssetsPieChart(props) {
+type Asset = {
+  coin: string
+  currentBTCValue
+}
+
+type AssetsPieChartProps = {
+  data: Asset[]
+}
+
+type activeShapePayload = {
+  coin: string
+  balance: string
+  currentBTCValue: string
+}
+
+type ActiveShapeProps = {
+  cx: number
+  cy: number
+  midAngle: number
+  innerRadius: number
+  outerRadius: number
+  startAngle: number
+  endAngle: number
+  fill: string
+  payload: activeShapePayload
+  value: number
+}
+
+function AssetsPieChart(props: AssetsPieChartProps) {
   const { data } = props
 
   const [activeIndex, setActive] = useState(0)
 
-  const renderActiveShape = (args) => {
+  const renderActiveShape = (args: ActiveShapeProps) => {
     const {
       cx,
       cy,
@@ -61,7 +89,7 @@ function AssetsPieChart(props) {
 
   const mappedDataCells = data
     .sort((a, b) => b.currentBTCValue - a.currentBTCValue)
-    .map((entry, index) => {
+    .map((entry, index: number) => {
       return <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]}/>
     })
 
@@ -79,7 +107,7 @@ function AssetsPieChart(props) {
           cy="50%"
           innerRadius={ 60 }
           outerRadius={ 80 }
-          onMouseEnter={(data, index) => setActive(index)}
+          onMouseEnter={(data, index: number) => setActive(index)}
         >
           { mappedDataCells }
         </Pie>

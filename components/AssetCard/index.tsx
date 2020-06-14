@@ -4,7 +4,7 @@ import { faBtc } from '@fortawesome/free-brands-svg-icons'
 import IconText from '../IconText'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-interface AssetCardProps {
+type AssetCardProps = {
   balance: number
   coin: string
   currentBTCValue: number
@@ -26,8 +26,8 @@ function AssetCard(props: AssetCardProps) {
   } = props
 
   const isCurrentValueUp = currentBTCValue >= initialValue
-  const currentValueBackground: string = isCurrentValueUp ? '#effaf3' : '#fffbeb'
-  const currentValueTextColor: string = isCurrentValueUp ? '#257942' : '#947600'
+  const currentValueBackground = isCurrentValueUp ? '#effaf3' : '#fffbeb'
+  const currentValueTextColor = isCurrentValueUp ? '#257942' : '#947600'
 
   function renderCardContent() {
     return (

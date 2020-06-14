@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import '../../styles/styles.sass'
 
-interface LayoutProps {
+type LayoutProps = {
   hasHero: boolean
   children: JSX.Element
 }
