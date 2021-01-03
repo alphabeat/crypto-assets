@@ -115,6 +115,21 @@ function Dashboard(props) {
     )
   }
 
+  const pieChartData = assets.reduce((acc, { data }) => {
+    const newCoinValue = acc[data.coin]
+    ? {
+      ...acc[data.coin],
+      balance: acc[data.coin].balance + data.balance,
+      currentBTCValue: acc[data.coin].currentBTCValue + data.currentBTCValue
+    }
+    : { ...data };
+
+    return {
+      ...acc,
+      [data.coin]: newCoinValue,
+    };
+  }, {})
+
   return (
     <Layout hasHero>
       <div className="Dashboard">
@@ -156,7 +171,7 @@ function Dashboard(props) {
                 : (
                   <div className="charts-container columns">
                     <div className="column is-half">
-                      <AssetsPieChart data={ assets.map(({ data }) => data) } />
+                      <AssetsPieChart data={ Object.values(pieChartData) } />
                     </div>
                     <div className="column is-one-quarter">
                       <article className="box has-text-centered has-background-light">
