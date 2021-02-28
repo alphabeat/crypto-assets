@@ -2,19 +2,11 @@ import fetch from 'node-fetch'
 
 import Ticker from '../models/ticker'
 
-type TickerPair = {
-  coin: string
-  market: string
-}
-
-type FetchTickerProps = {
-  platform: 'Kraken' | 'Bittrex'
-} & TickerPair
-
 const BITTREX_BASE_URL = 'https://api.bittrex.com/v3'
 const KRAKEN_BASE_URL = 'https://api.kraken.com/0/public/Ticker'
 
-async function getBittrexTicker({ coin, market }: TickerPair) {
+async function getBittrexTicker(ticker: Ticker) {
+  const { coin, market } = ticker
   const pair = `${coin}-${market}`
   const url = `${BITTREX_BASE_URL}/markets/${pair}/ticker`
 
@@ -28,7 +20,8 @@ async function getBittrexTicker({ coin, market }: TickerPair) {
   return 0
 }
 
-async function getKrakenTicker({ coin, market }: TickerPair) {
+async function getKrakenTicker(ticker: Ticker) {
+  const { coin, market } = ticker
   const parsedCoin = coin === 'BTC' ? 'XBT' : coin
   const parsedMarket = market === 'BTC' ? 'XBT' : market
 
@@ -47,10 +40,19 @@ async function getKrakenTicker({ coin, market }: TickerPair) {
   return 0
 }
 
-export async function fetchTickerPrice({ platform, coin, market }: Ticker) {
-  if ( platform.toLowerCase() === 'kraken' ) {
-    return getKrakenTicker({ coin, market })
-  }
+async function getBinanceTicker(ticker: Ticker) {
+  return 0
+}
 
-  return getBittrexTicker({ coin, market })
+export async function fetchTickerPrice(ticker: Ticker) {
+  const { platform } = ticker
+
+  switch (platform.toLowerCase()) {
+    case 'kraken':
+      return getKrakenTicker(ticker)
+    case 'binance':
+      return getBinanceTicker(ticker)
+    case 'bittrex':
+      return getBittrexTicker(ticker)
+  }
 }

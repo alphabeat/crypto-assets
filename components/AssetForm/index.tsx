@@ -1,26 +1,14 @@
 import { useState, useEffect } from 'react'
 import Router from 'next/router'
+import Asset, { DbAsset } from '../../models/asset'
 
 type FormElement = HTMLButtonElement | HTMLSelectElement
-
-type AssetFields = {
-  coin: string
-  balance: number
-  platform: string
-  initialValue: number
-  dashboard: string
-}
-
-type FaunadbResult = {
-  ref: object
-  data: AssetFields
-}
 
 type AssetFormProps = {
   show: boolean
   handleClose: (event?: React.MouseEvent<HTMLButtonElement>) => void
-  asset: FaunadbResult
   dashboardRef: string
+  asset?: DbAsset
 }
 
 function AssetForm(props: AssetFormProps) {
@@ -30,7 +18,7 @@ function AssetForm(props: AssetFormProps) {
 
   const isUpdate = Boolean(asset)
 
-  const initialState = isUpdate
+  const initialState: Asset = isUpdate
     ? {
         ...asset.data,
         dashboard: dashboardRef,
@@ -45,7 +33,7 @@ function AssetForm(props: AssetFormProps) {
 
   const { id: assetId } = isUpdate ? asset.ref['@ref'] : { id: null }
 
-  const [fields, setFields] = useState(initialState)
+  const [fields, setFields] = useState<Asset>(initialState)
 
   useEffect(() => {
     setFields(initialState)
@@ -79,8 +67,6 @@ function AssetForm(props: AssetFormProps) {
       ...asset,
       data: fields,
     }
-
-    console.log('COUCOU', API_URL)
 
     return fetch(`${API_URL}/assets/${assetId}`, {
       method: 'PUT',

@@ -1,29 +1,27 @@
 import { faEuroSign } from '@fortawesome/free-solid-svg-icons'
 import { faBtc } from '@fortawesome/free-brands-svg-icons'
-
-import IconText from '../IconText'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
+import Asset from '../../models/asset'
+import IconText from '../IconText'
+
 type AssetCardProps = {
-  balance: number
-  coin: string
-  currentBTCValue: number
-  currentEURValue: number
-  initialValue: number
+  asset: Asset
   onClick: (event?: React.MouseEvent<HTMLButtonElement>) => void
-  platform: string
 }
 
-function AssetCard(props: AssetCardProps) {
+const AssetCard: React.FC<AssetCardProps> = ({
+  asset,
+  onClick,
+}) => {
   const {
     balance,
     coin,
     currentBTCValue,
     currentEURValue,
     initialValue,
-    onClick,
     platform,
-  } = props
+  } = asset
 
   const isCurrentValueUp = currentBTCValue >= initialValue
   const currentValueBackground = isCurrentValueUp ? '#effaf3' : '#fffbeb'

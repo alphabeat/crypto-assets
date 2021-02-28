@@ -12,8 +12,9 @@ import Layout from '../../components/Layout'
 import TickerBox from '../../components/TickerBox'
 import TickerForm from '../../components/TickerForm'
 
-import { fetchTickerPrice } from '../../lib/tickers'
+import { DbAsset } from '../../models/asset'
 import Ticker, { DbTicker } from '../../models/ticker'
+import { fetchTickerPrice } from '../../lib/tickers'
 
 const getEmptyTicker = (index: number): DbTicker => ({
   ref: {
@@ -29,7 +30,7 @@ const getEmptyTicker = (index: number): DbTicker => ({
   }
 })
 
-const getRecordId = (record: FaunaDBRecord<Ticker>) => record.ref['@ref'].id
+const getRecordId = (record: DbTicker | DbAsset) => record.ref['@ref'].id
 
 const fetchTickersWithPrices = (tickers: DbTicker[]): Promise<DbTicker[]> =>
   Promise.all(tickers.map(async (ticker) => ({
@@ -42,7 +43,7 @@ const fetchTickersWithPrices = (tickers: DbTicker[]): Promise<DbTicker[]> =>
 
 type DashboardProps = {
   error: string
-  assets: Array<any>
+  assets: DbAsset[]
   tickers: DbTicker[]
   dashboardRef: string
 }
@@ -112,8 +113,8 @@ const Dashboard: React.FC<DashboardProps> = ({
     .map(asset =>
       <div key={ getRecordId(asset) } className="column is-one-third">
         <AssetCard
+          asset={ asset.data }
           onClick={() => handleAssetClick(asset)}
-          { ...asset.data }
         />
       </div>
     )
@@ -121,7 +122,7 @@ const Dashboard: React.FC<DashboardProps> = ({
   const renderNewAssetButton = () => {
     return (
       <button
-        className="button is-fullwidth is-info is-outlined"
+        className="button is-fu llwidth is-info is-outlined"
         onClick={() => toggleAssetModal(true)}
       >
         <span className="icon is-small">
@@ -285,27 +286,27 @@ export async function getServerSideProps(context) {
     return response.json()
   }
 
-  const fetchAssets = async () => {}
+  const fetchAssets = async (): Promise<DbAsset[]> => {
+    const response = await fetch(`${dashboardUrlWithRef}/assets`)
 
-  const fetchAssetsResponse = await fetch(`${dashboardUrlWithRef}/assets`)
+    return response.json()
+  }
 
   const [tickers, assets] = await Promise.all([
     fetchTickers(),
-    fetchAssetsResponse.json(),
+    fetchAssets(),
   ])
-
-  console.log(tickers)
 
   const tickersWithPrices = await fetchTickersWithPrices(tickers)
 
-  const tickerBTC = tickersWithPrices.find(ticker => {
+  const tickerBTCEUR = tickersWithPrices.find(ticker => {
     const { coin, market } = ticker.data
 
     return coin === 'BTC' && market === 'EUR'
   })
 
-  const currentBTCPrice = tickerBTC
-    ? tickerBTC.data.value
+  const currentBTCPrice = tickerBTCEUR
+    ? tickerBTCEUR.data.value
     : (
       await fetchTickerPrice({
         platform: 'Bittrex',
@@ -318,7 +319,7 @@ export async function getServerSideProps(context) {
     const { platform, coin, balance } = asset.data
 
     const currentPrice = coin !== 'BTC'
-      ? await fetchTickerPrice({ platform, coin, market: 'BTC' })
+      ? await fetchTickerPrice({ platform, coin, market: 'BTC' } as Ticker)
       : 1
 
     const currentBTCValue = balance * currentPrice 
@@ -333,7 +334,7 @@ export async function getServerSideProps(context) {
     }
   })
 
-  const assetsWithPrices = await Promise.all(assetsPromises)
+  const assetsWithPrices: DbAsset[] = await Promise.all(assetsPromises)
 
   return {
     props: {
