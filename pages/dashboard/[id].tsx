@@ -9,22 +9,29 @@ import AssetCard from '../../components/AssetCard'
 import AssetForm from '../../components/AssetForm'
 import AssetsPieChart from '../../components/AssetsPieChart'
 import Layout from '../../components/Layout'
-import Ticker from '../../components/Ticker'
+import TickerBox from '../../components/TickerBox'
 import TickerForm from '../../components/TickerForm'
 
-import { fetchTickerPrice } from "../../lib/tickers"
+import { fetchTickerPrice } from '../../lib/tickers'
+import Ticker, { DbTicker } from '../../models/ticker'
 
-const getEmptyTicker = (index) => ({
+const getEmptyTicker = (index: number): DbTicker => ({
   ref: {
     '@ref': {
       id: `empty-slot-${index}`,
     },
   },
+  ts: 1,
+  data: {
+    platform: 'Kraken',
+    coin: '',
+    market: '',
+  }
 })
 
-const getRecordId = (record) => record.ref['@ref'].id
+const getRecordId = (record: FaunaDBRecord<Ticker>) => record.ref['@ref'].id
 
-const fetchTickersWithPrices = (tickers) =>
+const fetchTickersWithPrices = (tickers: DbTicker[]): Promise<DbTicker[]> =>
   Promise.all(tickers.map(async (ticker) => ({
     ...ticker,
     data: {
@@ -33,9 +40,19 @@ const fetchTickersWithPrices = (tickers) =>
     },
   })))
 
-function Dashboard(props) {
-  const { error, assets, tickers, dashboardRef } = props
+type DashboardProps = {
+  error: string
+  assets: Array<any>
+  tickers: DbTicker[]
+  dashboardRef: string
+}
 
+const Dashboard: React.FC<DashboardProps> = ({
+  error,
+  assets,
+  tickers,
+  dashboardRef,
+}) => {
   if ( error ) {
     return <Error statusCode={ 404 } />
   }
@@ -60,7 +77,7 @@ function Dashboard(props) {
     toggleAssetModal(true)
   }
 
-  const handleTickerDelete = async (tickerId) => {
+  const handleTickerDelete = async (tickerId: string) => {
     try {
       const dashboardUrl = `/api/dashboard/${dashboardRef}`
       const response = await fetch(`${dashboardUrl}/tickers/${tickerId}`, {
@@ -81,11 +98,11 @@ function Dashboard(props) {
     const id = getRecordId(ticker)
 
     return (
-      <Ticker
+      <TickerBox
         key={ id }
         onDelete={() => handleTickerDelete(id)}
         onAdd={() => toggleTickerModal(true)}
-        { ...ticker.data }
+        ticker={ ticker.data }
       />
     )
   })
@@ -262,33 +279,40 @@ export async function getServerSideProps(context) {
   const dashboardRef = getRecordId(dashboard)
   const dashboardUrlWithRef = `${API_BASE_URL}/${dashboardRef}`
 
-  const [fetchTickersResponse, fetchAssetsResponse] = await Promise.all([
-    fetch(`${dashboardUrlWithRef}/tickers`),
-    fetch(`${dashboardUrlWithRef}/assets`),
-  ])
+  const fetchTickers = async (): Promise<DbTicker[]> => {
+    const response = await fetch(`${dashboardUrlWithRef}/tickers`)
+
+    return response.json()
+  }
+
+  const fetchAssets = async () => {}
+
+  const fetchAssetsResponse = await fetch(`${dashboardUrlWithRef}/assets`)
 
   const [tickers, assets] = await Promise.all([
-    fetchTickersResponse.json(),
+    fetchTickers(),
     fetchAssetsResponse.json(),
   ])
 
+  console.log(tickers)
+
   const tickersWithPrices = await fetchTickersWithPrices(tickers)
 
-  let currentBTCPrice = tickersWithPrices.find(ticker => {
+  const tickerBTC = tickersWithPrices.find(ticker => {
     const { coin, market } = ticker.data
 
     return coin === 'BTC' && market === 'EUR'
   })
 
-  if ( !currentBTCPrice ) {
-    const currentBTCEURPrice = await fetchTickerPrice({
-      platform: 'bittrex',
-      coin: 'BTC',
-      market: 'EUR',
-    })
-
-    currentBTCPrice = { data: { value: currentBTCEURPrice } }
-  }
+  const currentBTCPrice = tickerBTC
+    ? tickerBTC.data.value
+    : (
+      await fetchTickerPrice({
+        platform: 'Bittrex',
+        coin: 'BTC',
+        market: 'EUR',
+      })
+    )
 
   const assetsPromises = assets.map(async (asset) => {
     const { platform, coin, balance } = asset.data
@@ -304,7 +328,7 @@ export async function getServerSideProps(context) {
       data: {
         ...asset.data,
         currentBTCValue,
-        currentEURValue: currentBTCValue * currentBTCPrice.data.value,
+        currentEURValue: currentBTCValue * currentBTCPrice,
       }
     }
   })

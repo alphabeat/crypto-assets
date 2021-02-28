@@ -1,9 +1,20 @@
 import fetch from 'node-fetch'
 
+import Ticker from '../models/ticker'
+
+type TickerPair = {
+  coin: string
+  market: string
+}
+
+type FetchTickerProps = {
+  platform: 'Kraken' | 'Bittrex'
+} & TickerPair
+
 const BITTREX_BASE_URL = 'https://api.bittrex.com/v3'
 const KRAKEN_BASE_URL = 'https://api.kraken.com/0/public/Ticker'
 
-async function getBittrexTicker({ coin, market }) {
+async function getBittrexTicker({ coin, market }: TickerPair) {
   const pair = `${coin}-${market}`
   const url = `${BITTREX_BASE_URL}/markets/${pair}/ticker`
 
@@ -17,7 +28,7 @@ async function getBittrexTicker({ coin, market }) {
   return 0
 }
 
-async function getKrakenTicker({ coin, market }) {
+async function getKrakenTicker({ coin, market }: TickerPair) {
   const parsedCoin = coin === 'BTC' ? 'XBT' : coin
   const parsedMarket = market === 'BTC' ? 'XBT' : market
 
@@ -36,7 +47,7 @@ async function getKrakenTicker({ coin, market }) {
   return 0
 }
 
-export async function fetchTickerPrice({ platform, coin, market }) {
+export async function fetchTickerPrice({ platform, coin, market }: Ticker) {
   if ( platform.toLowerCase() === 'kraken' ) {
     return getKrakenTicker({ coin, market })
   }

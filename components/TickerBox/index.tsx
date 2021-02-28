@@ -1,24 +1,26 @@
+import { useCallback } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrashAlt } from '@fortawesome/free-regular-svg-icons'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 
 import IconText from '../IconText'
+import Ticker from '../../models/ticker'
 
-type TickerProps = {
-  coin: string
-  market: string
+export type TickerBoxProps = {
   onAdd: () => void
   onDelete: () => void
-  platform: string
-  value: number
+  ticker: Ticker
 }
 
-function Ticker(props: TickerProps) {
-  const { coin, market, onAdd, onDelete, platform, value } = props
-
+const TickerBox: React.FC<TickerBoxProps> = ({
+  onAdd,
+  onDelete,
+  ticker,
+}) => {
+  const { coin, market, platform, value } = ticker
   const isEmpty = value == null
 
-  const handleDelete = () => {
+  const handleDelete = useCallback(() => {
     const message = `
       Are you sure ? This action is irreversible.
     `
@@ -26,9 +28,9 @@ function Ticker(props: TickerProps) {
     if ( confirm(message) ) {
       onDelete()
     }
-  }
+  }, [])
 
-  const renderPlaceholder = () => {
+  const renderPlaceholder = useCallback(() => {
     return (
       <article
         className="tile is-child box empty-box has-background-white-bis has-text-info"
@@ -50,9 +52,9 @@ function Ticker(props: TickerProps) {
         `}</style>
       </article>
     )
-  }
+  }, [])
 
-  const renderBoxContent = () => {
+  const renderBoxContent = useCallback(() => {
     const valueColor = `has-text-${value === 0 ? 'danger' : 'grey'}`
 
     return (
@@ -111,7 +113,7 @@ function Ticker(props: TickerProps) {
         `}</style>
       </article>
     )
-  }
+  }, [])
 
   return (
     <div className="tile is-parent">
@@ -124,4 +126,4 @@ function Ticker(props: TickerProps) {
   )
 }
 
-export default Ticker
+export default TickerBox

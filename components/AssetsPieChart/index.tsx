@@ -5,7 +5,7 @@ const COLORS = ['#00D1B2', '#3298DC', '#48C774', '#FFDD57', '#F14668']
 
 type Asset = {
   coin: string
-  currentBTCValue
+  currentBTCValue: number
 }
 
 type AssetsPieChartProps = {
@@ -15,7 +15,7 @@ type AssetsPieChartProps = {
 type activeShapePayload = {
   coin: string
   balance: string
-  currentBTCValue: string
+  currentBTCValue: number
 }
 
 type ActiveShapeProps = {
