@@ -1,5 +1,6 @@
-///<reference path="../../lib/faunadb.d.ts" />
 import { useRouter } from 'next/router'
+import { DbAsset } from '../../models/asset'
+import { DbTicker } from '../../models/ticker'
 
 type DashboardFormProps = {
   show: boolean
@@ -9,20 +10,20 @@ type DashboardFormProps = {
 const API_URL = '/api/dashboard'
 
 const DEFAULT_TICKERS = [
-  { platform: 'bittrex', coin: 'BTC', market: 'EUR' },
-  { platform: 'bittrex', coin: 'BTC', market: 'USD' },
+  { platform: 'binance', coin: 'BTC', market: 'EUR' },
+  { platform: 'binance', coin: 'BTC', market: 'USD' },
   { platform: 'kraken', coin: 'ETH', market: 'EUR' },
   { platform: 'kraken', coin: 'ETH', market: 'USD' },
 ]
 
 const DEFAULT_ASSETS = [
-  { platform: 'bittrex', coin: 'BTC', balance: 1.00503293, initialValue: 1.00503293 },
+  { platform: 'binance', coin: 'BTC', balance: 1.00503293, initialValue: 1.00503293 },
   { platform: 'kraken', coin: 'BTC', balance: 0.21402864, initialValue: 0.21402864 },
   { platform: 'kraken', coin: 'ETH', balance: 32.6, initialValue: 0.00823043 },
   { platform: 'kraken', coin: 'XRP', balance: 4545, initialValue: 0.00005273 },
 ]
 
-const getRecordId = (record: FaunaDBRecord) => record.ref['@ref'].id
+const getRecordId = (record: DbAsset | DbTicker) => record.ref['@ref'].id
 
 function DashboardForm(props: DashboardFormProps) {
   const { show, handleClose } = props

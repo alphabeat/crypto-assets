@@ -4,6 +4,7 @@ import Ticker from '../models/ticker'
 
 const BITTREX_BASE_URL = 'https://api.bittrex.com/v3'
 const KRAKEN_BASE_URL = 'https://api.kraken.com/0/public/Ticker'
+const BINANCE_BASE_URL = 'https://api.binance.com/api/v3/ticker/price'
 
 async function getBittrexTicker(ticker: Ticker) {
   const { coin, market } = ticker
@@ -41,6 +42,19 @@ async function getKrakenTicker(ticker: Ticker) {
 }
 
 async function getBinanceTicker(ticker: Ticker) {
+  const { coin, market } = ticker
+  const parsedMarket = market === 'USD' ? 'USDC' : market
+
+  const pair = `${coin}${parsedMarket}`
+  const url = `${BINANCE_BASE_URL}?symbol=${pair}`
+
+  const response = await fetch(url)
+  const { price } = await response.json()
+
+  if ( price ) {
+    return parseFloat(price)
+  }
+
   return 0
 }
 

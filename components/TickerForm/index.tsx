@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import Router from 'next/router'
+
 
 type TickerFormProps = {
   show: boolean
@@ -7,10 +8,8 @@ type TickerFormProps = {
   dashboardRef: string
 }
 
-function TickerForm(props: TickerFormProps) {
-  const { show, handleClose, dashboardRef } = props
-
-  const API_URL = `/api/dashboard/${dashboardRef}`
+const TickerForm: React.FC<TickerFormProps> = ({ show, handleClose, dashboardRef }) => {
+  const API_URL = useMemo(() => `/api/dashboard/${dashboardRef}`, [dashboardRef])
 
   const initialState = {
     platform: '',
@@ -87,6 +86,7 @@ function TickerForm(props: TickerFormProps) {
                   <select name="platform" value={ fields.platform } onChange={ handleInputChange }>
                     <option value="">Choose one...</option>
                     <option value="bittrex">Bittrex</option>
+                    <option value="binance">Binance</option>
                     <option value="kraken">Kraken</option>
                   </select>
                 </div>

@@ -181,6 +181,7 @@ function AssetForm(props: AssetFormProps) {
                   <select name="platform" value={ fields.platform } onChange={ handleInputChange }>
                     <option value="">Choose one...</option>
                     <option value="bittrex">Bittrex</option>
+                    <option value="binance">Binance</option>
                     <option value="kraken">Kraken</option>
                   </select>
                 </div>

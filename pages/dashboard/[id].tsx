@@ -309,7 +309,7 @@ export async function getServerSideProps(context) {
     ? tickerBTCEUR.data.value
     : (
       await fetchTickerPrice({
-        platform: 'Bittrex',
+        platform: 'Binance',
         coin: 'BTC',
         market: 'EUR',
       })
