@@ -19,4 +19,4 @@ const CurrencyProvider: React.FC = (props) => {
 
 const useCurrency = () => useContext(CurrencyContext)
 
-export { CurrencyProvider, useCurrency };
+export { CurrencyProvider, useCurrency }

@@ -5,7 +5,8 @@ import { CurrencyProvider, useCurrency } from '../../context/currency'
 import Switch from '../Switch'
 
 type LayoutProps = {
-  hasHero: boolean
+  hasHero: boolean;
+  children: React.ReactNode;
 }
 
 const Layout: React.FC<LayoutProps> = ({ hasHero, children }) => {
