@@ -1,9 +1,10 @@
-import { faEuroSign } from '@fortawesome/free-solid-svg-icons'
+import { faDollarSign, faEuroSign } from '@fortawesome/free-solid-svg-icons'
 import { faBtc } from '@fortawesome/free-brands-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import Asset from '../../models/asset'
 import IconText from '../IconText'
+import { useCurrency } from '../../context/currency'
 
 type AssetCardProps = {
   asset: Asset
@@ -22,6 +23,8 @@ const AssetCard: React.FC<AssetCardProps> = ({
     initialValue,
     platform,
   } = asset
+
+  const { currency } = useCurrency()
 
   const isCurrentValueUp = currentBTCValue >= initialValue
   const currentValueBackground = isCurrentValueUp ? '#effaf3' : '#fffbeb'
@@ -66,7 +69,9 @@ const AssetCard: React.FC<AssetCardProps> = ({
             <div className="title is-6 has-text-info">
               { currentEURValue.toFixed(2) }
               {' '}
-              <FontAwesomeIcon icon={ faEuroSign } />
+              {currency === 'EUR'
+                ? <FontAwesomeIcon icon={ faEuroSign } />
+                : <FontAwesomeIcon icon={ faDollarSign } />}
             </div>
           </div>
         </footer>
