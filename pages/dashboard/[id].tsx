@@ -41,6 +41,8 @@ const fetchTickersWithPrices = (tickers: DbTicker[]): Promise<DbTicker[]> =>
     },
   })))
 
+const isStableCoin = (coin: string) => ['USDT', 'USDC', 'BUSD', 'DAI'].includes(coin)
+
 type DashboardProps = {
   error: string
   assets: DbAsset[]
@@ -315,21 +317,33 @@ export async function getServerSideProps(context) {
       })
     )
 
+  const tickerEURUSD = await fetchTickerPrice({
+    platform: 'Binance',
+    coin: 'EUR',
+    market: 'USDT',
+  })
+
   const assetsPromises = assets.map(async (asset) => {
     const { platform, coin, balance } = asset.data
 
-    const currentPrice = coin !== 'BTC'
-      ? await fetchTickerPrice({ platform, coin, market: 'BTC' } as Ticker)
-      : 1
+    let currentPrice;
 
-    const currentBTCValue = balance * currentPrice 
+    if (isStableCoin(coin)) {
+      currentPrice = 1 / currentBTCPrice
+    } else if (coin === 'BTC') {
+      currentPrice = 1
+    } else {
+      currentPrice = await fetchTickerPrice({ platform, coin, market: 'BTC' } as Ticker)
+    }
+
+    const currentBTCValue = balance * currentPrice
 
     return {
       ...asset,
       data: {
         ...asset.data,
         currentBTCValue,
-        currentEURValue: currentBTCValue * currentBTCPrice,
+        currentEURValue: currentBTCValue * currentBTCPrice / (isStableCoin(coin) ? tickerEURUSD : 1),
       }
     }
   })

@@ -23,8 +23,8 @@ async function getBittrexTicker(ticker: Ticker) {
 
 async function getKrakenTicker(ticker: Ticker) {
   const { coin, market } = ticker
-  const parsedCoin = coin === 'BTC' ? 'XBT' : coin
-  const parsedMarket = market === 'BTC' ? 'XBT' : market
+  const parsedCoin = coin.replace(/^BTC$/, 'XBT')
+  const parsedMarket = market.replace(/^BTC$/, 'XBT')
 
   const pair = `${parsedCoin}${parsedMarket}`
   const url = `${KRAKEN_BASE_URL}?pair=${pair}`
@@ -43,7 +43,7 @@ async function getKrakenTicker(ticker: Ticker) {
 
 async function getBinanceTicker(ticker: Ticker) {
   const { coin, market } = ticker
-  const parsedMarket = market === 'USD' ? 'USDC' : market
+  const parsedMarket = market.replace(/^USD$/, 'USDC')
 
   const pair = `${coin}${parsedMarket}`
   const url = `${BINANCE_BASE_URL}?symbol=${pair}`
