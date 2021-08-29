@@ -1,10 +1,12 @@
+import React from 'react'
 import { faDollarSign, faEuroSign } from '@fortawesome/free-solid-svg-icons'
 import { faBtc } from '@fortawesome/free-brands-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import Asset from '../../models/asset'
-import IconText from '../IconText'
 import { useCurrency } from '../../context/currency'
+import useFetchCoinPrice from '../../lib/hooks/useFetchCoinPrice'
+
+import IconText from '../IconText/IconText'
 
 type AssetCardProps = {
   asset: Asset
@@ -18,29 +20,27 @@ const AssetCard: React.FC<AssetCardProps> = ({
   const {
     balance,
     coin,
-    currentBTCValue,
-    currentEURValue,
     initialValue,
-    platform,
   } = asset
+  const { currency, currentBTCPrice } = useCurrency()
+  const { price: currentAssetPrice } = useFetchCoinPrice(currency, coin)
 
-  const { currency } = useCurrency()
+  const currentAssetValue = balance * currentAssetPrice
+  const currentBTCValue = coin === 'BTC'
+    ? balance
+    : balance * (currentAssetPrice / currentBTCPrice)
 
   const isCurrentValueUp = currentBTCValue >= initialValue
   const currentValueBackground = isCurrentValueUp ? '#effaf3' : '#fffbeb'
   const currentValueTextColor = isCurrentValueUp ? '#257942' : '#947600'
+  const currencyIcon = currency === 'EUR' ? faEuroSign : faDollarSign
 
-  function renderCardContent() {
-    return (
+  return (
+    <div className="AssetCard" onClick={() => onClick()} style={{ cursor: 'pointer' }}>
       <div className="card">
         <header className="card-header has-background-light">
           <p className="card-header-title">
             { coin }
-          </p>
-          <p className="card-header-icon">
-            <span className={`tag is-link is-light is-capitalized`}>
-              { platform }
-            </span>
           </p>
         </header>
         <div className="card-content has-text-centered">
@@ -67,21 +67,11 @@ const AssetCard: React.FC<AssetCardProps> = ({
         <footer className="card-footer">
           <div className="card-footer-item">
             <div className="title is-6 has-text-info">
-              { currentEURValue.toFixed(2) }
-              {' '}
-              {currency === 'EUR'
-                ? <FontAwesomeIcon icon={ faEuroSign } />
-                : <FontAwesomeIcon icon={ faDollarSign } />}
+              <IconText icon={ currencyIcon } text={ currentAssetValue.toFixed(2) } />
             </div>
           </div>
         </footer>
       </div>
-    )
-  }
-
-  return (
-    <div className="AssetCard" onClick={() => onClick()} style={{ cursor: 'pointer' }}>
-      { renderCardContent() }
     </div>
   )
 }

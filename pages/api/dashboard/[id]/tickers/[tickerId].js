@@ -1,4 +1,4 @@
-const { client, query } = require('../../../../../lib/faunadb')
+const { client, query } = require('../../../../../lib/db/faunadb')
 
 async function deleteTicker(id, res) {
   try {
@@ -18,7 +18,7 @@ async function deleteTicker(id, res) {
 module.exports = async (req, res) => {
   const { method, query } = req
 
-  if ( method === 'DELETE' ) {
+  if (method === 'DELETE') {
     return deleteTicker(query.tickerId, res)
   }
 

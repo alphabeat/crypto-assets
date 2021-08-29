@@ -3,11 +3,13 @@ type Asset = {
   dashboard: string
   balance: number
   initialValue: number
-  platform: string
-  currentBTCValue?: number,
-  currentEURValue?: number,
 }
 
 export type DbAsset = FaunaDBRecord<Asset>
+
+export type AssetWithPrices = Asset & {
+  unitFiatPrice: number
+  unitBtcPrice: number
+}
 
 export default Asset

@@ -1,19 +1,37 @@
-import React, { useContext, useState } from 'react'
+import Error from 'next/error'
+import React, { useContext, useEffect, useState } from 'react'
+import SpinnerFallback from '../components/SpinnerFallback/SpinnerFallback'
+import useFetchCoinPrice from '../lib/hooks/useFetchCoinPrice'
 
-type Currency = 'EUR' | 'USD'
+import Currency from '../models/currency'
+
+
 
 type CurrencyContextType = {
   currency: Currency
-  setCurrency: (currency: Currency) => void
+  currentBTCPrice: number
 }
 
 const CurrencyContext = React.createContext<CurrencyContextType>({} as CurrencyContextType)
 
-const CurrencyProvider: React.FC = (props) => {
-  const [currency, setCurrency] = useState<Currency>('EUR')
+type CurrencyProviderProps = {
+  currency: Currency
+}
+
+const CurrencyProvider: React.FC<CurrencyProviderProps> = (props) => {
+  const { currency } = props;
+  const {
+    price: currentBTCPrice,
+    isLoading,
+    hasError,
+  } = useFetchCoinPrice(currency, 'BTC')
+
+  if (isLoading) return <SpinnerFallback />
+
+  if (hasError) return <Error statusCode={ 500 } />
 
   return (
-    <CurrencyContext.Provider value={{ currency, setCurrency }} {...props} />
+    <CurrencyContext.Provider value={{ currency, currentBTCPrice }} {...props} />
   )
 }
 

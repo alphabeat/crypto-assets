@@ -1,4 +1,4 @@
-const { client, query } = require('../../../../../lib/faunadb')
+const { client, query } = require('../../../../../lib/db/faunadb')
 
 async function updateAsset(id, asset, res) {
   try {
@@ -34,11 +34,11 @@ async function deleteAsset(id, res) {
 module.exports = async (req, res) => {
   const { body, method, query } = req
 
-  if ( method === 'PUT' ) {
+  if (method === 'PUT') {
     return updateAsset(query.assetId, JSON.parse(body), res)
   }
 
-  if ( method === 'DELETE' ) {
+  if (method === 'DELETE') {
     return deleteAsset(query.assetId, res)
   }
 

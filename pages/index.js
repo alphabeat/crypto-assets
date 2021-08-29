@@ -2,11 +2,11 @@ import { useState } from 'react'
 import { useRouter } from 'next/router'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faArrowRight } from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faArrowRight } from '@fortawesome/free-solid-svg-icons'
 
-import DashboardForm from '../components/DashboardForm'
-import IconText from '../components/IconText'
-import Layout from '../components/Layout'
+import DashboardForm from '../components/DashboardForm/DashboardForm'
+import IconText from '../components/IconText/IconText'
+import Layout from '../components/Layout/Layout'
 
 function Home() {
   const [dashboardId, setDashboardId] = useState('')
@@ -35,7 +35,7 @@ function Home() {
               Create your own dashboard to monitor the value of your crypto assets stored on various exchanges.
             </p>
             <button className="button is-link is-large" onClick={() => toggleModal(true)}>
-              <IconText icon={ faPlus } text="Create new dashboard" />
+              <IconText icon={faPlus} text="Create new dashboard" />
             </button>
           </div>
           <div className="search-bar has-text-centered">
@@ -43,14 +43,14 @@ function Home() {
             <h2 className="subtitle">
               Enter your Dashboard ID
             </h2>
-            <form onSubmit={ handleSubmit }>
+            <form onSubmit={handleSubmit}>
               <div className="control dashboard-id">
                 <input
                   type="text"
                   id="dashboard-id-input"
                   className="input is-large"
                   name="dashboardId"
-                  value={ dashboardId }
+                  value={dashboardId}
                   placeholder="••••••••"
                   pattern="^[A-Z0-9]{0,8}$"
                   onChange={(e) => setDashboardId(e.target.value)}
@@ -60,11 +60,11 @@ function Home() {
                 <button
                   type="submit"
                   className="button is-link is-large is-outlined"
-                  disabled={ dashboardId.length !== 8 }
+                  disabled={dashboardId.length !== 8}
                 >
                   <span>Go to dashboard</span>
                   <span className="icon">
-                    <FontAwesomeIcon icon={ faArrowRight } />
+                    <FontAwesomeIcon icon={faArrowRight} />
                   </span>
                 </button>
               </div>
@@ -73,13 +73,13 @@ function Home() {
         </div>
         {
           displayModal
-          ? (
-            <DashboardForm
-              show ={ displayModal }
-              handleClose={() => toggleModal(false)}
-            />
-          )
-          : null
+            ? (
+              <DashboardForm
+                show={displayModal}
+                handleClose={() => toggleModal(false)}
+              />
+            )
+            : null
         }
       </div>
     </Layout>

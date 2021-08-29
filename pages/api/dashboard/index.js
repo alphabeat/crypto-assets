@@ -1,4 +1,4 @@
-const { client, query } = require('../../../lib/faunadb')
+const { client, query } = require('../../../lib/db/faunadb')
 const generateId = require('../../../utils/generateId')
 
 async function createDashboard(dashboardId, res) {
@@ -18,14 +18,14 @@ async function createDashboard(dashboardId, res) {
     res.status(200).json(dashboard)
   }
   catch (e) {
-    res.status(500).json({ error: e.message })
+    res.status(500).json({ error: e.message })
   }
 }
 
 module.exports = async (req, res) => {
   const { method } = req
 
-  if ( method === 'POST' ) {
+  if (method === 'POST') {
     const id = generateId()
 
     return createDashboard(id, res)

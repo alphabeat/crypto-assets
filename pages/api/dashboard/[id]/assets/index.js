@@ -1,4 +1,4 @@
-const { client, query } = require('../../../../../lib/faunadb')
+const { client, query } = require('../../../../../lib/db/faunadb')
 
 async function getAssets(dashboardRef, res) {
   try {
@@ -38,9 +38,9 @@ async function createAsset(data, res) {
 }
 
 module.exports = async (req, res) => {
-  const { body, method, query } = req
+  const { body, method, query } = req
 
-  if ( method === 'POST' ) {
+  if (method === 'POST') {
     return createAsset(body, res)
   }
 

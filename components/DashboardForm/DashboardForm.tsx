@@ -9,18 +9,13 @@ type DashboardFormProps = {
 
 const API_URL = '/api/dashboard'
 
-const DEFAULT_TICKERS = [
-  { platform: 'binance', coin: 'BTC', market: 'EUR' },
-  { platform: 'binance', coin: 'BTC', market: 'USD' },
-  { platform: 'kraken', coin: 'ETH', market: 'EUR' },
-  { platform: 'kraken', coin: 'ETH', market: 'USD' },
-]
+const DEFAULT_TICKERS = ['BTC', 'ETH', 'ADA', 'SOL']
 
 const DEFAULT_ASSETS = [
-  { platform: 'binance', coin: 'BTC', balance: 1.00503293, initialValue: 1.00503293 },
-  { platform: 'kraken', coin: 'BTC', balance: 0.21402864, initialValue: 0.21402864 },
-  { platform: 'kraken', coin: 'ETH', balance: 32.6, initialValue: 0.00823043 },
-  { platform: 'kraken', coin: 'XRP', balance: 4545, initialValue: 0.00005273 },
+  { coin: 'BTC', balance: 1.00503293, initialValue: 1.00503293 },
+  { coin: 'BTC', balance: 0.21402864, initialValue: 0.21402864 },
+  { coin: 'ETH', balance: 32.6, initialValue: 0.00823043 },
+  { coin: 'XRP', balance: 4545, initialValue: 0.00005273 },
 ]
 
 const getRecordId = (record: DbAsset | DbTicker) => record.ref['@ref'].id
@@ -42,7 +37,7 @@ function DashboardForm(props: DashboardFormProps) {
 
   async function createTickersAndAssets(dashboardRef: string) {
     return Promise.all([
-      ...DEFAULT_TICKERS.map((ticker) => createRecord('tickers', dashboardRef, ticker)),
+      ...DEFAULT_TICKERS.map((ticker) => createRecord('tickers', dashboardRef, { coin: ticker })),
       ...DEFAULT_ASSETS.map((asset) => createRecord('assets', dashboardRef, asset)),
     ])
   }
