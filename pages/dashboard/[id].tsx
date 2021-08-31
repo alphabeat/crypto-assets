@@ -1,11 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { GetServerSideProps } from 'next'
 import Error from 'next/error'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGripHorizontal, faChartPie } from '@fortawesome/free-solid-svg-icons'
 
-import useFetchDashboard from '../../lib/hooks/useFetchDashboard'
+import { useCurrency } from '../../context/currency'
 import { DashboardProvider } from '../../context/dashboard'
+import useFetchDashboard from '../../lib/hooks/useFetchDashboard'
 
 import AssetsList from '../../components/AssetsList/AssetsList'
 import AssetsOverview from '../../components/AssetsOverview/AssetsOverview'
@@ -20,8 +21,11 @@ type DashboardProps = {
 }
 
 const Dashboard: React.VFC<DashboardProps> = ({ dashboardId }) => {
+  const { currency } = useCurrency()
   const { dashboard, isLoading, hasError } = useFetchDashboard(dashboardId)
   const [currentView, setCurrentView] = useState<View>('list')
+
+  useEffect(() => setCurrentView('list'), [currency])
 
   if ( isLoading ) return <SpinnerFallback />
 
