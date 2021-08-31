@@ -1,15 +1,6 @@
-import { useCallback } from 'react'
-import Error from 'next/error'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTrashAlt } from '@fortawesome/free-regular-svg-icons'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 
-import Ticker from '../../models/ticker'
-import { useCurrency } from '../../context/currency'
-import useFetchCoinPrice from '../../lib/hooks/useFetchCoinPrice'
-
 import IconText from '../IconText/IconText'
-import SpinnerFallback from '../SpinnerFallback/SpinnerFallback'
 
 export type EmptyTickerBoxProps = {
   onAdd: () => void
