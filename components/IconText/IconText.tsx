@@ -7,12 +7,19 @@ type IconTextProps = {
 }
 
 const IconText: React.VFC<IconTextProps> = ({ icon, text }) => (
-  <span className="icon-text">
-    <span className="icon">
-      <FontAwesomeIcon icon={ icon } />
+  <>
+    <span className="icon-text">
+      <span className="icon">
+        <FontAwesomeIcon icon={ icon } />
+      </span>
+      <span>{ text }</span>
     </span>
-    <span>{ text }</span>
-  </span>
+    <style>{`
+      .icon-text {
+        align-items: center;
+      }
+    `}</style>
+  </>
 )
 
 export default IconText
