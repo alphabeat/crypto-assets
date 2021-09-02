@@ -41,9 +41,9 @@ const AssetCard: React.FC<AssetCardProps> = ({
         <header className="card-header has-background-light">
           <p className="card-header-title">
             { coin }
-            <p className="is-size-7 has-text-weight-normal has-text-grey">
+            <span className="is-size-7 has-text-weight-normal has-text-grey">
               {`1 ${coin} = ${currentAssetPrice.toFixed(2)} ${currency}`}
-            </p>
+            </span>
           </p>
         </header>
         <div className="card-content has-text-centered">
